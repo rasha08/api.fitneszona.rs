@@ -21,12 +21,12 @@
 
                     <li class="list-group-item row col-md-11 col-md-offset-1">
                         <h4 class="col-md-8">Korisnici na fitneszona.rs</h4>
-                        <a class="btn btn-default col-md-4" href="/articles" role="button">Prikazi</a>
+                        <a class="btn btn-default col-md-4" href="/users" role="button">Prikazi</a>
                     </li>
 
                     <li class="list-group-item row col-md-11 col-md-offset-1">
                         <h4 class="col-md-8">Konfiguracija sajta fitneszona.rs</h4>
-                        <a class="btn btn-default col-md-4" href="/articles" role="button">Prikazi</a>
+                        <a class="btn btn-default col-md-4" href="/configuration/1/edit" role="button">Prikazi</a>
                     </li>
                     
                 </div>

@@ -8,10 +8,11 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>API Fitnes Zona</title>
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="http://fitneszona.rs/api/public/css/app.css" rel="stylesheet">
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 </head>
 <body>
     <div id="app">
@@ -74,8 +75,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
-    <script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
+    <script src="http://fitneszona.rs/api/public/js/app.js"></script>
+    <script src="http://fitneszona.rs/api/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
     <script>
         CKEDITOR.replace( 'article-ckeditor' );
     </script>

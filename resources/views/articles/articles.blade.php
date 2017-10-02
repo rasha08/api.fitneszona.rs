@@ -6,7 +6,6 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
                 <div class="panel-heading">Tekstovi </div>
-
                  @if (@$data['success'] === 'create')
                     <h2 class="alert alert-success">
                         <strong>Uspesno ste dodali tekst!</strong>
@@ -48,6 +47,7 @@
                                 </form>
                             </li>
                       @endforeach
+                      {{ @$data['articles']->links() }}
                     @endif
                     
                 </div>

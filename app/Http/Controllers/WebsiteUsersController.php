@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\WebsiteUsers;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterUserRequest;
+use Log;
 
 class WebsiteUsersController extends Controller
 {
@@ -15,7 +16,10 @@ class WebsiteUsersController extends Controller
      */
     public function index()
     {
-        return '{status:"Route is not available to Front-End App"}';
+        $users = WebsiteUsers::all();
+        Log::info('GET ALL USERS');
+
+        return view('users.all')->with('users', $users);
     }
 
     /**
@@ -45,6 +49,7 @@ class WebsiteUsersController extends Controller
         $user->timestamps();
 
         $user->save();
+        Log::info('CREATED USER | '.$user->email.' | ');
 
         return '{status:"success"}';
     }
@@ -57,6 +62,7 @@ class WebsiteUsersController extends Controller
      */
     public function show($id)
     {
+        Log::info('GET USER | '.$id.' | ');
 
         return WebsiteUsers::find($id);
     }
@@ -87,6 +93,7 @@ class WebsiteUsersController extends Controller
         $user->last_name = $request->input('lastName') ? $request->input('lastName') : $user->last_name;
 
         $user->save();
+        Log::info('UPDATED USER | '.$id.' | ');
 
         return '{status:"succcess"}';
     }
@@ -100,6 +107,7 @@ class WebsiteUsersController extends Controller
     public function destroy($id)
     {
         WebsiteUsers::destroy($id);
+        Log::info('DELETED USER | '.$id.' | ');
 
         return '{status:"success"}';
     }
@@ -132,9 +140,17 @@ class WebsiteUsersController extends Controller
             } else if (strrpos($user->liked_tags, $request['value']) === false) {
                 $user->liked_tags = $user->liked_tags.'|'.$request['value'];
             } 
+        } else if ($request['action'] === 'addTextToVisited') {
+            if (!$user->visited_text_id) {
+                $user->visited_text_id = $request['value'];
+            } else if (strrpos($user->visited_text_id, $request['value']) === false) {
+                $user->visited_text_id = $user->visited_text_id.'|'.$request['value'];
+            } 
         } else {
             return 'status: "unknown action"';
         }
+
+        Log::info('USER | '.$id.' | ACTION: | '.$request['action'].' |');
 
 
         $user->save();

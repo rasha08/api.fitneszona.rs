@@ -74,7 +74,9 @@ class ArticlesController extends Controller
      */
     public function index()
     {
-        $articles = Articles::all();
+        $articles = Articles::where('id', '>', 0)
+            ->orderBy('updated_at', 'desc')
+            ->simplePaginate(10);
 
         $data = ['articles' => $articles];
 

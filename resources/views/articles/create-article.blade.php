@@ -45,7 +45,7 @@
                                </div>
                            </div>
                            <div class="form-group{{ $errors->has('image_url') ? ' has-error' : '' }}">
-                               <label for="image_url" class="col-md-5 control-label">Tagovi (tagovi se dodaju sintaksom tag1|tag2|tag3</label>
+                               <label for="image_url" class="col-md-5 control-label">Url adresa slike:</label>
                                <div class="col-md-7">
                                    <input id="image_url" type="text" class="form-control" name="image_url" value="{{ old('image_url') }}">
                                    @if ($errors->has('image_url'))
@@ -56,7 +56,7 @@
                                </div>
                            </div>
                            <div class="form-group{{ $errors->has('tags') ? ' has-error' : '' }}">
-                               <label for="tags" class="col-md-5 control-label">TUrl adresa slike:</label>
+                               <label for="tags" class="col-md-5 control-label">Tagovi (tagovi se dodaju sintaksom tag1|tag2|tag3</label>
                                <div class="col-md-7">
                                    <input id="tags" type="text" class="form-control" name="tags" value="{{ old('tags') }}">
                                    @if ($errors->has('tags'))

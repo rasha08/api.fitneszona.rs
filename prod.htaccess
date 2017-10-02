@@ -1,0 +1,533 @@
+
+RewriteOptions inherit
+
+RewriteEngine on
+
+RewriteCond %{HTTP_USER_AGENT} libwww [NC,OR]
+
+RewriteCond %{QUERY_STRING} ^(.*)=http [NC]
+
+RewriteRule ^(.*)$ – [F,L]
+
+RewriteCond %{HTTP_HOST} ^136\.243\.147\.109
+RewriteRule (.*) http://fitneszona.rs/$1 [R=301,L]
+
+RewriteCond %{HTTP_USER_AGENT} libwww-perl.*
+RewriteRule .* ? [F,L]
+
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^/?$ "http\:\/\/fitneszona\.rs\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^news\.html$ "http\:\/\/fitneszona\.rs\/novosti\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^fitCent\.html$ "http\:\/\/fitneszona\.rs\/fitnescentri\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^licnitreneri\.html$ "http\:\/\/fitneszona\.rs\/licnitreneri\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^sportske_prodavnice\.html$ "http\:\/\/fitneszona\.rs\/sportskiklubovi\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^www\.fitneszona\.rs\/trenazno_sagorevanje_masti_drugi_deo\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/trenazno_sagorevanje_masti_drugi_deo\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^hrana_koja_ubrzava_rast_misica\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/hrana_koja_ubrzava_rast_misica\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^strahinjamarkovic\.html$ "http\:\/\/fitneszona\.rs\/licnitreneri\/strahinjamarkovic\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^aleksandarstanisic\.html$ "http\:\/\/fitneszona\.rs\/licnitreneri\/aleksandarstanisic\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^dekistevic\.html$ "http\:\/\/fitneszona\.rs\/licnitreneri\/dekistevic\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^sta_trazis_u_teretani\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/sta_trazis_u_teretani\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^trcanje\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/trcanje\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^ishrana_za_rast_misica_nakon_treninga\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/ishrana_za_rast_misica_nakon_treninga\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^mrsavljenje_pocetak\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/mrsavljenje_pocetak\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^crossfit\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/crossfit\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^10_najboljih_vezbi_za_ledja\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/10_najboljih_vezbi_za_ledja\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^sokirati_misic_za_bolji_rast\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/sokirati_misic_za_bolji_rast\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^55_najboljih_nacina_da_sagorite_mast\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/55_najboljih_nacina_da_sagorite_mast\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^zagrejte_se_pre_vezbanja_u_teretani\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/zagrejte_se_pre_vezbanja_u_teretani" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^vezbe_za_grudi_koje_morate_da_radite\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/vezbe_za_grudi_koje_morate_da_radite\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^princip_prezamora_u_treninguzagornjideoledja\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/princip_prezamora_u_treninguzagornjideoledja\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^koliko_misica_mozete_dobiti_i_za_koje_vreme\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/koliko_misica_mozete_dobiti_i_za_koje_vreme\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^najvece_greske_prilikom_treninga_nogu\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/najvece_greske_prilikom_treninga_nogu\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^zbog_cega_je_istezanje_vazno\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/zbog_cega_je_istezanje_vazno\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^vezbe_za_biceps\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/vezbe_za_biceps\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^vezbe_za_ramena\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/vezbe_za_ramena\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^7_sigurnih_nacina_za_brzi_rast_vasih_misica_grudi\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/7_sigurnih_nacina_za_brzi_rast_vasih_misica_grudi\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^koliko_misicne_mase_mozete_izgraditi_prirodnim_putem\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/koliko_misicne_mase_mozete_izgraditi_prirodnim_putem\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^vezbe_za_podlaktice\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/vezbe_za_podlaktice\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^ceste_greske_u_pokusaju_izgradnje_misicne_mase\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/ceste_greske_u_pokusaju_izgradnje_misicne_mase\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^kako_dobiti_plocice_na_stomaku_u_3_koraka\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/kako_dobiti_plocice_na_stomaku_u_3_koraka\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^vezbe_za_noge\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/vezbe_za_noge\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^da_li_su_svi_suplementi_zaista_super\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/da_li_su_svi_suplementi_zaista_super\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^kako_ubrzati_rast_misica\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/kako_ubrzati_rast_misica\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^vezbe_za_vrat\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/vezbe_za_vrat\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^povrce\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/povrce\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^mleko\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/mleko\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^pirinac\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/pirinac\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^suvovoce\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/suvovoce\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^fitneszona\.rs$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.fitneszona\.rs$
+RewriteRule ^urme\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/urme\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^fitcurves\.html$ "http\:\/\/fitneszona\.rs\/fitnescentri\/fitcurves\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^activegymandfitness\.html$ "http\:\/\/fitneszona\.rs\/fitnescentri\/activegymandfitness\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^cityfitnesscentar\.html$ "http\:\/\/fitneszona\.rs\/fitnescentri\/cityfitnessclub\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^spartakus\.html$ "http\:\/\/fitneszona\.rs\/fitnescentri\/spartakus\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^monika\.html$ "http\:\/\/fitneszona\.rs\/fitnescentri\/fitnessmonica\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^topform\.html$ "http\:\/\/fitneszona\.rs\/fitnescentri\/topform\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^slavkozec\.html$ "http\:\/\/fitneszona\.rs\/licnitreneri\/slavkozec\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^ritmolatino\.html$ "http\:\/\/fitneszona\.rs\/sportskiklubovi\/ritmolatino\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^sortskicentarduga\.html$ "http\:\/\/fitneszona\.rs\/sportskiklubovi\/sortskicentarduga\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^milanzaric\.html$ "http\:\/\/fitneszona\.rs\/licnitreneri\/milanzaric\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^slavkozec\/$ "http\:\/\/fitneszona\.rs\/licnitreneri\/slavkozec\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^markopavlovic\/$ "http\:\/\/fitneszona\.rs\/licnitreneri\/markopavlovic\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^milanzaric\/$ "http\:\/\/fitneszona\.rs\/licnitreneri\/milanzaric\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^nenadstanojev\/$ "http\:\/\/fitneszona\.rs\/licnitreneri\/nenadstanojev\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^ivanzaric\/$ "http\:\/\/fitneszona\.rs\/licnitreneri\/ivanzaric\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^dragankrstic\/$ "http\:\/\/fitneszona\.rs\/licnitreneri\/dragankrstic\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^club44\/$ "http\:\/\/fitneszona\.rs\/fitnescentri\/club44\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^bonafides\/$ "http\:\/\/fitneszona\.rs\/fitnescentri\/bonafides\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^fitnescentarolp\/$ "http\:\/\/fitneszona\.rs\/fitnescentri\/fitnescentarolp\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^her\-coolgym\/$ "http\:\/\/fitneszona\.rs\/fitnescentri\/her\-coolgym\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^trenazno_sagorevanje_masti_drugi_deo\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/trenazno_sagorevanje_masti_drugi_deo\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^stottpilates\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/stottpilates\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^cokolada\.html$ "http\:\/\/fitneszona\.rs\/novosti\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^proteini\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/proteini\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^kako_da_povecate_masu_bicepsa_i_tricepsa\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/kako_da_povecate_masu_bicepsa_i_tricepsa\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^5_koraka_do_savrsene_misicne_definicije\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/5_koraka_do_savrsene_misicne_definicije\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^vrste_ulja\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/vrste_ulja\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^pliometrijske_vezbe\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/pliometrijske_vezbe\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^przenje_ili_dinstanje\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/przenje_ili_dinstanje\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^kako_dobiti_plocice_na_stomaku\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/kako_dobiti_plocice_na_stomaku\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^vezbanje_i_starenje\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/vezbanje_i_starenje\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^reformerpilates\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/reformerpilates\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^trikovi_za_savrseno_telo\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/trikovi_za_savrseno_telo\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^sortskicentarduga\/$ "http\:\/\/fitneszona\.rs\/sportskiklubovi\/sortskicentarduga\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^trcanje_vs_voznja_bicikla\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/trcanje_vs_voznja_bicikla\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^vlakna\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/vlakna\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^insanity\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/insanity\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^tbw\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/tbw\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^vezbe_za_zadnjicu\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/vezbe_za_zadnjicu\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^prave_vezbe_za_stomak_i_guzu\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/prave_vezbe_za_stomak_i_guzu\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^sta_i_kada_treba_da_jedete_pre_treninga\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/sta_i_kada_treba_da_jedete_pre_treninga\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^vinyasaflowyoga\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/vinyasaflowyoga\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^karmayoga\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/karmayoga\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^kako_misici_rastu\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/kako_misici_rastu\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^pilates\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/pilates\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^bodyvive\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/bodyvive\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^jaja\.html$ "http\:\/\/fitneszona\.rs\/novosti\/ishrana\/jaja\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^koji_suplementi_su_neophodni\.html$ "http\:\/\/fitneszona\.rs\/novosti\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^kafa\.html$ "http\:\/\/fitneszona\.rs\/novosti\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^yogazatrudnice\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/yogazatrudnice\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^shbam\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/shabam\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^pilatessatrakama\.html$ "http\:\/\/fitneszona\.rs\/novosti\/grupnitreninzi\/pilatessatrakama\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^koji_oblik_fizicke_aktivnosti_je_najbolji_za_mozak\.html$ "http\:\/\/fitneszona\.rs\/novosti\/trening\/koji_oblik_fizicke_aktivnosti_je_najbolji_za_mozak\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^fitnescentri\/fitnessmonika\/$ "http\:\/\/fitneszona\.rs\/fitnescentri\/fitnessmonica\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^m_index\.html$ "http\:\/\/fitneszona\.rs\/mobile\/" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^m_news\.html$ "http\:\/\/fitneszona\.rs\/novosti\/m\.index\.html" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^m_licnitreneri\.html$ "http\:\/\/fitneszona\.rs\/licnitreneri\/m\.index\.html" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^m_fitcent\.html$ "http\:\/\/fitneszona\.rs\/fitnescentri\/m\.index\.html" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^m_sportske_prodavnice\.html$ "http\:\/\/fitneszona\.rs\/sportskiklubovi\/index\.html" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^faq\.html$ "http\:\/\/fitneszona\.rs\/404\.html" [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^contact\/$ "http\:\/\/fitneszona\.rs\/contact\.php" [R=301,L]
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)/articles$ /$1 [L,R=301]
+    RewriteRule ^(.*)/api$ /$1 [L,R=301]
+    RewriteRule ^(.*)/users$ /$1 [L,R=301]
+
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ /api/public/index.php [L]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+<ifModule mod_gzip.c>
+mod_gzip_on Yes
+mod_gzip_dechunk Yes
+mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
+mod_gzip_item_include handler ^cgi-script$
+mod_gzip_item_include mime ^text/.*
+mod_gzip_item_include mime ^application/x-javascript.*
+mod_gzip_item_exclude mime ^image/.*
+mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</ifModule>
+
+<IfModule mod_deflate.c>
+# Compress HTML, CSS, JavaScript, text, XML and fonts
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE application/rss+xml
+AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+AddOutputFilterByType DEFLATE application/x-font
+AddOutputFilterByType DEFLATE application/x-font-opentype
+AddOutputFilterByType DEFLATE application/x-font-otf
+AddOutputFilterByType DEFLATE application/x-font-woff
+AddOutputFilterByType DEFLATE application/x-font-truetype
+AddOutputFilterByType DEFLATE application/x-font-ttf
+AddOutputFilterByType DEFLATE application/x-javascript
+AddOutputFilterByType DEFLATE application/xhtml+xml
+AddOutputFilterByType DEFLATE application/xml
+AddOutputFilterByType DEFLATE font/opentype
+AddOutputFilterByType DEFLATE font/otf
+AddOutputFilterByType DEFLATE font/woff
+AddOutputFilterByType DEFLATE font/ttf
+AddOutputFilterByType DEFLATE image/svg+xml
+AddOutputFilterByType DEFLATE image/x-icon
+AddOutputFilterByType DEFLATE image/vnd.microsoft.icon
+AddOutputFilterByType DEFLATE text/css
+AddOutputFilterByType DEFLATE text/html
+AddOutputFilterByType DEFLATE text/javascript
+AddOutputFilterByType DEFLATE text/plain
+AddOutputFilterByType DEFLATE text/xml
+
+# Force compression for mangled `Accept-Encoding` request headers
+# https://developer.yahoo.com/blogs/ydn/pushing-beyond-gzipping-25601.html
+
+<IfModule mod_setenvif.c>
+<IfModule mod_headers.c>
+SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+</IfModule>
+</IfModule>
+</IfModule>
+
+## EXPIRES CACHING ##
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "now"
+    ExpiresByType application/atom+xml "access plus 5 minutes"
+    ExpiresByType application/json "access plus 5 minutes"
+    ExpiresByType application/javascript "access plus 30 days"
+    ExpiresByType application/mac-binhex40 "access plus 1 day"
+    ExpiresByType application/msword "access plus 1 day"
+    ExpiresByType application/octet-stream "access plus 30 days"
+    ExpiresByType application/pdf "access plus 1 day"
+    ExpiresByType application/x-cdf "access plus 1 day"
+    ExpiresByType application/x-director "access plus 1 day"
+    ExpiresByType application/x-font-ttf "access plus 30 days"
+    ExpiresByType application/x-font-opentype "access plus 1 day"
+    ExpiresByType application/x-font-woff "access plus 30 days"
+    ExpiresByType application/x-javascript "access plus 30 days"
+    ExpiresByType application/x-netcdf "access plus 1 day"
+    ExpiresByType application/x-shockwave-flash "access plus 1 day"
+    ExpiresByType application/xhtml+xml "access plus 5 minutes"
+    ExpiresByType application/xml "access plus 5 minutes"
+    ExpiresByType application/font-woff "access plus 30 days"
+    ExpiresByType application/font-woff2 "access plus 30 days"
+    ExpiresByType application/font-ttf "access plus 30 days"
+    ExpiresByType application/font-eot "access plus 30 days"
+    ExpiresByType application/zip "access plus 1 day"
+    ExpiresByType application/vnd.ms-fontobject "access plus 30 days"
+    ExpiresByType audio/basic "access plus 30 days"
+    ExpiresByType audio/mpeg "access plus 30 days"
+    ExpiresByType audio/x-aiff "access plus 30 days"
+    ExpiresByType audio/x-wav "access plus 30 days"
+    ExpiresByType image/bmp "access plus 30 days"
+    ExpiresByType image/gif "access plus 365 days"
+    ExpiresByType image/jpeg "access plus 365 days"
+    ExpiresByType image/png "access plus 365 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType image/vnd.microsoft.icon "access plus 7 days"
+    ExpiresByType image/x-icon "access plus 30 days"
+    ExpiresByType text/css "access plus 30 days"
+    ExpiresByType text/html "access plus 5 minutes"
+    ExpiresByType text/javascript "access plus 30 days"
+    ExpiresByType text/plain "access plus 1 day"
+    ExpiresByType text/xml "access plus 5 minutes"
+     ExpiresByType text/ttf "access plus 5 minutes"
+    ExpiresByType video/quicktime "access plus 1 day"
+    ExpiresByType video/mp4 "access plus 365 days"
+    ExpiresByType video/webm "access plus 365 days"
+    ExpiresByType video/ogg "access plus 365 days"
+    ExpiresByType video/x-msvideo "access plus 1 day"
+    ExpiresByType text/x-cross-domain-policy "access plus 1 week"
+</IfModule>
+## EXPIRES CACHING ##
+<FilesMatch ".(flv|gif|jpg|jpeg|png|ico|swf|js|css|pdf)$">
+    # access plus 1 year
+    Header set Cache-Control "max-age=31536000"
+</FilesMatch>
+
+<IfModule mod_headers.c>
+Header always set Strict-Transport-Security "max-age=16070400; includeSubDomains"
+Header set X-Content-Type-Options "nosniff"
+Header set X-XSS-Protection "1; mode=block"
+
+<FilesMatch "\.(appcache|atom|bbaw|bmp|crx|css|cur|eot|f4[abpv]|flv|geojson|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|topojson|tt[cf]|txt|vcard|vcf|vtt|webapp|web[mp]|webmanifest|woff2?|xloc|xml|xpi)$">
+Header unset X-XSS-Protection
+</FilesMatch>
+</IfModule>
+
+# Start Cache Enabler
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+<IfModule mod_mime.c>
+# webp HTML file
+RewriteCond %{REQUEST_URI} /$
+RewriteCond %{REQUEST_URI} !^/wp-admin/.*
+RewriteCond %{REQUEST_METHOD} !=POST
+RewriteCond %{QUERY_STRING} =""
+RewriteCond %{HTTP_COOKIE} !(wp-postpass|wordpress_logged_in|comment_author)_
+RewriteCond %{HTTP:Accept-Encoding} gzip
+RewriteCond %{HTTP:Accept} image/webp
+RewriteCond %{DOCUMENT_ROOT}/wp-content/cache/cache-enabler/%{HTTP_HOST}%{REQUEST_URI}index-webp.html.gz -f
+RewriteRule ^(.*) /wp-content/cache/cache-enabler/%{HTTP_HOST}%{REQUEST_URI}index-webp.html.gz [L]
+
+# gzip HTML file
+RewriteCond %{REQUEST_URI} /$
+RewriteCond %{REQUEST_URI} !^/wp-admin/.*
+RewriteCond %{REQUEST_METHOD} !=POST
+RewriteCond %{QUERY_STRING} =""
+RewriteCond %{HTTP_COOKIE} !(wp-postpass|wordpress_logged_in|comment_author)_
+RewriteCond %{HTTP:Accept-Encoding} gzip
+RewriteCond %{DOCUMENT_ROOT}/wp-content/cache/cache-enabler/%{HTTP_HOST}%{REQUEST_URI}index.html.gz -f
+RewriteRule ^(.*) /wp-content/cache/cache-enabler/%{HTTP_HOST}%{REQUEST_URI}index.html.gz [L]
+
+AddType text/html .gz
+AddEncoding gzip .gz
+</IfModule>
+
+# default HTML file
+RewriteCond %{REQUEST_URI} /$
+RewriteCond %{REQUEST_URI} !^/wp-admin/.*
+RewriteCond %{REQUEST_METHOD} !=POST
+RewriteCond %{QUERY_STRING} =""
+RewriteCond %{HTTP_COOKIE} !(wp-postpass|wordpress_logged_in|comment_author)_
+RewriteCond %{DOCUMENT_ROOT}/wp-content/cache/cache-enabler/%{HTTP_HOST}%{REQUEST_URI}index.html -f
+RewriteRule ^(.*) /wp-content/cache/cache-enabler/%{HTTP_HOST}%{REQUEST_URI}index.html [L]
+</IfModule>
+# End Cache Enabler
+RewriteRule .*\.()$ - [F,NC]
+
+Header unset Pragma
+Header unset ETag
+FileETag None
+
+ServerSignature Off

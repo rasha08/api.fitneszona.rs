@@ -39,3 +39,8 @@ Route::group(['middleware' => ['api']], function () {
 
 Route::post('api/users/{id}/', 'WebsiteUsersController@action')->middleware('api');
 Route::post('api/users/login', 'WebsiteUsersController@login')->middleware('api');
+
+Route::group(['middleware' => ['api', 'auth']], function () {
+    Route::resource('configuration', 'WebsiteConsfigurationController');
+});
+Route::get('api/configuration/{id}', 'WebsiteConsfigurationController@getConfiguration')->middleware('api');
