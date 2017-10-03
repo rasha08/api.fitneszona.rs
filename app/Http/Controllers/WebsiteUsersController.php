@@ -167,7 +167,7 @@ class WebsiteUsersController extends Controller
         }
 
         if ($user->password === bcrypt($request->password)) {
-            return '{status:"success"}';
+            return $user;
         } else {
             return '{status:"wrong password"}';
         }
