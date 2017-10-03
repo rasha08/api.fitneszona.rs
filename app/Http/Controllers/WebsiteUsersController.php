@@ -163,7 +163,7 @@ class WebsiteUsersController extends Controller
         $user = WebsiteUsers::where('email', $request('email'))->first();
 
         if (!$user) {
-            return '{status:"not existing user}';
+            return '{status:"not existing user"}';
         }
 
         if ($user->password === bcrypt($request->password)) {
