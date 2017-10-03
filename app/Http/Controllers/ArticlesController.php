@@ -115,7 +115,10 @@ class ArticlesController extends Controller
         $article->category = $request->input('category');
         $article->seen_times = 0;
         $article->save();
-        $articles = Articles::all();
+      
+        $articles = Articles::where('id', '>', 0)
+            ->orderBy('updated_at', 'desc')
+            ->simplePaginate(10);
         
         $data = [
             'articles' => $articles,
@@ -177,14 +180,16 @@ class ArticlesController extends Controller
         $article->category = $request->input('category') ? $request->input('category') : $article->category;;
         $article->save();
 
-        $articles = Articles::all();
+       $articles = Articles::where('id', '>', 0)
+            ->orderBy('updated_at', 'desc')
+            ->simplePaginate(10);
         
         $data = [
             'articles' => $articles,
             'success' => 'update'
         ];
 
-        return redirect('/articles')->with('data', $data);
+        return view('articles.articles')->with('data', $data);
     }
 
     /**
