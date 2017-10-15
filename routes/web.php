@@ -37,8 +37,9 @@ Route::group(['middleware' => ['api']], function () {
     Route::resource('users', 'WebsiteUsersController');
 });
 
-Route::post('api/users/{id}/', 'WebsiteUsersController@action')->middleware('api');
+Route::post('api/users/action/{id}/', 'WebsiteUsersController@action')->middleware('api');
 Route::post('api/users/login', 'WebsiteUsersController@login')->middleware('api');
+Route::post('api/users/reset-password', 'WebsiteUsersController@resetPassword')->middleware('api');
 
 Route::group(['middleware' => ['api', 'auth']], function () {
     Route::resource('configuration', 'WebsiteConsfigurationController');

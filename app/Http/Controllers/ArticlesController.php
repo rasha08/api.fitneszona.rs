@@ -124,6 +124,7 @@ class ArticlesController extends Controller
             'articles' => $articles,
             'success' => 'create'
         ];
+        Log::info('ADDED ARTICLE: | '. $article->id .' | ');
 
         return view('articles.articles')->with('data', $data);
     }
@@ -188,7 +189,8 @@ class ArticlesController extends Controller
             'articles' => $articles,
             'success' => 'update'
         ];
-
+        Log::info('UPDATED ARTICLE: | '. $id .' | ');
+        
         return view('articles.articles')->with('data', $data);
     }
 
@@ -206,6 +208,7 @@ class ArticlesController extends Controller
             'articles' => $articles,
             'success' => 'delete'
         ];
+        Log::info('DELETED ARTICLE: | '. $id .' | ');
 
         return redirect('/articles')->with('data', $data);
 
@@ -347,7 +350,7 @@ class ArticlesController extends Controller
             $dislike->text_id = $id;
             $dislike->save();
         } else {
-            return "{error:'Unknown action'}";
+            return "{'satus':'Unknown action'}";
         }
         
         $article = Articles::find($id);

@@ -45,13 +45,13 @@ class WebsiteUsersController extends Controller
         $user->first_name = $request->firstName;
         $user->last_name = $request->lastName;
         $user->email = $request->email;
-        $user->password = bcrypt($request->password);
+        $user->password = $request->password;
         $user->timestamps();
 
         $user->save();
         Log::info('CREATED USER | '.$user->email.' | ');
 
-        return '{status:"success"}';
+        return '{"status":"registration success"}';
     }
 
     /**
@@ -75,7 +75,7 @@ class WebsiteUsersController extends Controller
      */
     public function edit(WebsiteUsers $websiteUsers)
     {
-        return '{status:"Route is not available to Front-End App"}';
+        return '{"status":"Route is not available to Front-End App"}';
     }
 
     /**
@@ -95,7 +95,7 @@ class WebsiteUsersController extends Controller
         $user->save();
         Log::info('UPDATED USER | '.$id.' | ');
 
-        return '{status:"succcess"}';
+        return '{"status":"succcess"}';
     }
 
     /**
@@ -109,7 +109,7 @@ class WebsiteUsersController extends Controller
         WebsiteUsers::destroy($id);
         Log::info('DELETED USER | '.$id.' | ');
 
-        return '{status:"success"}';
+        return '{"status":"success"}';
     }
 
     public function action(Request $request, $id)
@@ -147,7 +147,7 @@ class WebsiteUsersController extends Controller
                 $user->visited_text_id = $user->visited_text_id.'|'.$request['value'];
             } 
         } else {
-            return 'status: "unknown action"';
+            return '"status": "unknown action"';
         }
 
         Log::info('USER | '.$id.' | ACTION: | '.$request['action'].' |');
@@ -155,21 +155,93 @@ class WebsiteUsersController extends Controller
 
         $user->save();
 
-        return '{status:"success"}';
+        return '{"status":"success"}';
     }
 
     public function login(Request $request)
-    {
-        $user = WebsiteUsers::where('email', $request('email'))->first();
+    {   
+        Log::info('USER LOGIN  | '. $request->email.' |');
+        $user = WebsiteUsers::where('email', $request['email'])->first();
 
         if (!$user) {
-            return '{status:"not existing user"}';
+            return '{"status":"non existing user"}';
         }
 
-        if ($user->password === bcrypt($request->password)) {
+
+        Log::info('USER LOGIN  | '.$user->email.' |');
+        if ($user->password === $request->password) {
             return $user;
         } else {
-            return '{status:"wrong password"}';
+            return '{"status":"wrong password"}';
         }
+    }
+
+    public function resetPassword(Request $request) {
+        $user = WebsiteUsers::where('email', $request['email'])->first();
+        if (!$user) {
+            return '{"status":"non existing user"}';
+        }
+
+        $newPassword = $this->generateRandomString(10);
+        
+        $uppercase = preg_match('@[A-Z]@', $newPassword);
+        $lowercase = preg_match('@[a-z]@', $newPassword);
+        $number    = preg_match('@[0-9]@', $newPassword);
+
+        while (!$uppercase || !$lowercase || !$number) {
+            $newPassword = $this->generateRandomString(10);
+            
+            $uppercase = preg_match('@[A-Z]@', $newPassword);
+            $lowercase = preg_match('@[a-z]@', $newPassword);
+            $number    = preg_match('@[0-9]@', $newPassword);
+        }
+       
+        $user->password = $newPassword;
+        $user->save();
+   
+        Log::info('RESET PASSWORD  | '.$request['email'].' |');
+        $this->sendResetPasswordEmail($request['email'], $newPassword);
+        
+        return '{"status":"new password"}';
+    }
+
+    private function generateRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+    private function sendResetPasswordEmail($email, $newPassword)
+    {
+        $to = $email;
+        $subject = "Fitnes Zona - Resetovanje Lozinke";
+        
+        $message = "
+        <html>
+        <head>
+        <title>Fitnes Zona - Resetovanje Lozinke</title>
+        </head>
+        <body>
+        <p>Poštovani, Vaša nova lozinka je: </p>
+        <h4>".$newPassword."</h4>
+        <hr>
+        <p>
+            Srdačan Pozdrav, <br>
+            <b>Vaša Fitnes Zona</b>
+        </p>
+        </body>
+        </html>
+        ";
+        
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+        
+        $headers .= 'From: <fitneszona.mail@gmail.com>' . "\r\n";
+        
+        mail($to,$subject,$message,$headers);
     }
 }
