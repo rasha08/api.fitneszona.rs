@@ -113,6 +113,7 @@ class ArticlesController extends Controller
         $article->image_url = $request->input('image_url');
         $article->tags = $request->input('tags');
         $article->category = $request->input('category');
+        $article->article_title_url_slug = $this->createTitleUrlSlug($request->input('title'));
         $article->seen_times = 0;
         $article->save();
       
@@ -179,6 +180,8 @@ class ArticlesController extends Controller
         $article->image_url = $request->input('image_url') ? $request->input('image_url') : $articles->image_url;
         $article->tags = $request->input('tags') ? $request->input('tags') : $article->tags;;
         $article->category = $request->input('category') ? $request->input('category') : $article->category;;
+        $article->article_title_url_slug = $request->input('title') ? 
+            $this->createTitleUrlSlug($request->input('title')) : $this->createTitleUrlSlug($request->$article->title);
         $article->save();
 
        $articles = Articles::where('id', '>', 0)
@@ -384,24 +387,26 @@ class ArticlesController extends Controller
         foreach ($articles as $article) {
             $singleArticle = Articles::find($article->id);
 
-            $nameSlug = trim(mb_strtolower($singleArticle->title, 'UTF-8'));
-            $nameSlug = preg_replace('/-/', '', $nameSlug);
-            $nameSlug = preg_replace('/\s+/', ' ', $nameSlug);
-            $nameSlug = preg_replace('/\s+/', '-', $nameSlug);
-            $nameSlug = preg_replace('/\?/', '', $nameSlug);
-            $nameSlug = preg_replace('/\./', '', $nameSlug);
-            $nameSlug = preg_replace('/\,/', '', $nameSlug);
-            $nameSlug = preg_replace('/\!/', '', $nameSlug);
-            $nameSlug = preg_replace('/\:/', '', $nameSlug);
-            $nameSlug = preg_replace('/\;/', '', $nameSlug);
-            $nameSlug = preg_replace('/\(/', '', $nameSlug);
-            $nameSlug = preg_replace('/\)/', '', $nameSlug);
-
-
-
-
-            $article->article_title_url_slug = $nameSlug;
+            $article->article_title_url_slug = $this->createTitleUrlSlug($article->title);
             $article->save();
         }
+    }
+
+    private function createTitleUrlSlug($title)
+    {
+        $nameSlug = trim(mb_strtolower($title, 'UTF-8'));
+        $nameSlug = preg_replace('/-/', '', $nameSlug);
+        $nameSlug = preg_replace('/\s+/', ' ', $nameSlug);
+        $nameSlug = preg_replace('/\s+/', '-', $nameSlug);
+        $nameSlug = preg_replace('/\?/', '', $nameSlug);
+        $nameSlug = preg_replace('/\./', '', $nameSlug);
+        $nameSlug = preg_replace('/\,/', '', $nameSlug);
+        $nameSlug = preg_replace('/\!/', '', $nameSlug);
+        $nameSlug = preg_replace('/\:/', '', $nameSlug);
+        $nameSlug = preg_replace('/\;/', '', $nameSlug);
+        $nameSlug = preg_replace('/\(/', '', $nameSlug);
+        $nameSlug = preg_replace('/\)/', '', $nameSlug);
+
+        return $nameSlug;
     }
 }
