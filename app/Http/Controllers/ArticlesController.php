@@ -366,4 +366,42 @@ class ArticlesController extends Controller
 
         return Response::json($article, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
+
+    public function getArticleCategoryAndTags($id)
+    {
+        $article = Articles::find($id);
+
+        $category = $article->category;
+        $tags = $article->tags;
+
+        return "{'category:'".$category.",tags:".$tags."}";
+    }
+
+    public function createUrlSlugs()
+    {
+        $articles = Articles::all();
+
+        foreach ($articles as $article) {
+            $singleArticle = Articles::find($article->id);
+
+            $nameSlug = trim(mb_strtolower($singleArticle->title, 'UTF-8'));
+            $nameSlug = preg_replace('/-/', '', $nameSlug);
+            $nameSlug = preg_replace('/\s+/', ' ', $nameSlug);
+            $nameSlug = preg_replace('/\s+/', '-', $nameSlug);
+            $nameSlug = preg_replace('/\?/', '', $nameSlug);
+            $nameSlug = preg_replace('/\./', '', $nameSlug);
+            $nameSlug = preg_replace('/\,/', '', $nameSlug);
+            $nameSlug = preg_replace('/\!/', '', $nameSlug);
+            $nameSlug = preg_replace('/\:/', '', $nameSlug);
+            $nameSlug = preg_replace('/\;/', '', $nameSlug);
+            $nameSlug = preg_replace('/\(/', '', $nameSlug);
+            $nameSlug = preg_replace('/\)/', '', $nameSlug);
+
+
+
+
+            $article->article_title_url_slug = $nameSlug;
+            $article->save();
+        }
+    }
 }

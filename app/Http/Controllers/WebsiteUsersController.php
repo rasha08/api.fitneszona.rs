@@ -226,6 +226,7 @@ class WebsiteUsersController extends Controller
         <title>Fitnes Zona - Resetovanje Lozinke</title>
         </head>
         <body>
+        <h2>Fitnes Zona - Resetovanje Lozinke</h2>
         <p>Poštovani, Vaša nova lozinka je: </p>
         <h4>".$newPassword."</h4>
         <hr>
@@ -243,5 +244,11 @@ class WebsiteUsersController extends Controller
         $headers .= 'From: <fitneszona.mail@gmail.com>' . "\r\n";
         
         mail($to,$subject,$message,$headers);
+    }
+
+    public function getUserSpecificData($id, $data) {
+        $user = WebsiteUsers::find($id);
+
+        return $user['data'];
     }
 }
