@@ -194,7 +194,7 @@ class ArticlesController extends Controller
         ];
         Log::info('UPDATED ARTICLE: | '. $id .' | ');
         
-        return view('articles.articles')->with('data', $data);
+        return redirect('/articles')->with('data', $data);
     }
 
     /**
