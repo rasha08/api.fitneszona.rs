@@ -8,7 +8,7 @@ use Log;
 
 class WebsiteConsfigurationController extends Controller
 {   
-    private $validHomePageChoices = [
+    public $validHomePageChoices = [
         'landing',
         'articles',
         'latest articles',
@@ -139,5 +139,10 @@ class WebsiteConsfigurationController extends Controller
         Log::info('GET CONFIGURATION FOR WEBSITE ID: | '.$id.' |');
 
         return WebsiteConsfiguration::find($id);
+    }
+
+    public function getActiveCategories($id)
+    {
+        return $this->validHomePageChoices;
     }
 }

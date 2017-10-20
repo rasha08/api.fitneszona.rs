@@ -75,7 +75,7 @@ class ArticlesController extends Controller
     public function index()
     {
         $articles = Articles::where('id', '>', 0)
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->simplePaginate(10);
 
         $data = ['articles' => $articles];
@@ -226,7 +226,7 @@ class ArticlesController extends Controller
 
         $articles = $this->filterForResponse($articles);
 
-        Log::info('GET ALL ARTICLES');
+        Log::info('GET ALL ARTICLES | '.count($articles).' | ');
 
         return Response::json($articles, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
@@ -408,5 +408,23 @@ class ArticlesController extends Controller
         $nameSlug = preg_replace('/\)/', '', $nameSlug);
 
         return $nameSlug;
+    }
+
+    public function counter(Request $request)
+    {
+        $responseOject = [];
+        $timestring = $request->timestring;
+        $timestamp = date($timestring);
+
+        foreach ($this->validCategories as $category) {
+            $articles = Articles::where('category', $category)
+                ->where('updated_at','>=', $timestamp)
+                ->get();
+            $responseOject[$category] = count($articles);
+        }
+
+
+        Log::info('CATEGORIES COUNTER REQUESTED FOR DATE: | '. $timestring .' | '. $timestamp .' | ');
+        return json_encode((object)$responseOject);
     }
 }

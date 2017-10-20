@@ -32,6 +32,7 @@ Route::get('api/articles/category/{category}/latest', 'ArticlesController@catego
 Route::get('api/articles/{id}', 'ArticlesController@article')->middleware('api');
 Route::get('api/articles/{id}/catgory-and-tags', 'ArticlesController@getArticleCategoryAndTags')->middleware('api');
 Route::get('api/articles/all/create-url-slugs', 'ArticlesController@createUrlSlugs')->middleware('api');
+Route::post('api/articles/all/counter', 'ArticlesController@counter')->middleware('api');
 
 Route::post('api/articles/{id}/', 'ArticlesController@action')->middleware('api');
 
@@ -49,3 +50,4 @@ Route::group(['middleware' => ['api', 'auth']], function () {
     Route::resource('configuration', 'WebsiteConsfigurationController');
 });
 Route::get('api/configuration/{id}', 'WebsiteConsfigurationController@getConfiguration')->middleware('api');
+Route::get('api/configuration/{id}/categories', 'WebsiteConsfigurationController@getActiveCategories')->middleware('api');
