@@ -9,18 +9,18 @@ use Log;
 class WebsiteConsfigurationController extends Controller
 {   
     public $validHomePageChoices = [
-        'landing',
         'articles',
-        'latest articles',
-        'top articles',
+        'latest_articles',
+        'top_articles',
         'trening',
         'ishrana',
-        'grupni treninzi',
+        'grupni_treninzi',
         'saveti',
         'yoga',
         'crossfit',
         'trcanje',
-        'mrsavljenje'
+        'mrsavljenje',
+        'power lifting'
     ];
 
     private $validThemes = ['light', 'dark', 'urban', 'roboto', 'art'];
@@ -33,7 +33,7 @@ class WebsiteConsfigurationController extends Controller
      */
     public function index()
     {
-        return '{status:"Route is not available"}';
+        return '{"status":"Route is not available"}';
     }
 
     /**
@@ -43,7 +43,7 @@ class WebsiteConsfigurationController extends Controller
      */
     public function create()
     {
-        return '{status:"Route is not available"}';
+        return '{"status":"Route is not available"}';
     }
 
     /**
@@ -54,7 +54,7 @@ class WebsiteConsfigurationController extends Controller
      */
     public function store(Request $request)
     {   
-        return '{status:"Route is not available"}';
+        return '{"status":"Route is not available"}';
     }
 
     /**
@@ -65,7 +65,7 @@ class WebsiteConsfigurationController extends Controller
      */
     public function show($id)
     {
-        return '{status:"Route is not available"}';
+        return '{"status":"Route is not available"}';
     }
 
     /**
@@ -77,10 +77,12 @@ class WebsiteConsfigurationController extends Controller
     public function edit($id)
     {
         $configuration = WebsiteConsfiguration::find($id);
+        $activeCategories = explode('|', $configuration->active_categories);
 
         $data = [
             'configuration' => $configuration,
             'validHomePageChoices' => $this->validHomePageChoices,
+            'activeCategories' => $activeCategories ? $activeCategories : $validHomePageChoices,
             'validThemes' => $this->validThemes
         ];
 
@@ -115,15 +117,29 @@ class WebsiteConsfigurationController extends Controller
         $configuration->text_for_email_response = $request->input('text_for_email_response') ? 
             $request->input('text_for_email_response') : $configuration->text_for_email_response;
 
+        $activeCategories = '';
+        foreach ($this->validHomePageChoices as $category) {
+            if ($request->input($category)) {
+                $activeCategories .= $category.'|';
+            }
+        }
+
+        $activeCategories = substr($activeCategories, 0, -1);
+        $configuration->active_categories = $activeCategories;
+
+
         $configuration->save();
+
+        $activeCategories = explode('|', $activeCategories);
 
         $data = [
             'configuration' => $configuration,
             'validHomePageChoices' => $this->validHomePageChoices,
             'validThemes' => $this->validThemes,
-            'status' => 'Success'
+            'activeCategories' => $activeCategories,
+            'status' => 'success'
         ];
-        Log::info('CONFIGURATION UPDATED');
+        Log::info('CONFIGURATION UPDATED FOR WEBSITE | '.$id.' |');
 
         return redirect('/configuration/'.$id.'/edit')->with('data', $data);
     }
@@ -142,7 +158,13 @@ class WebsiteConsfigurationController extends Controller
     }
 
     public function getActiveCategories($id)
-    {
-        return $this->validHomePageChoices;
+    {   
+        $configuration = WebsiteConsfiguration::find($id);
+
+        $activeCategories = explode('|', $configuration->active_categories);
+
+        Log::info('ACTIVE CATEGORIES FETCHED FOR WEBSITE | '.$id.' |');
+
+        return json_encode((object)['activeCategories' => $activeCategories]);
     }
 }

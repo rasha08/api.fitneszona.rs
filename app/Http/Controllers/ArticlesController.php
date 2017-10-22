@@ -29,10 +29,10 @@ class ArticlesController extends Controller
     protected function filterForResponse($articles = [])
     {
         foreach ($articles as $article) {
-            $article->text = NULL;
-            $article->likes_id = NULL;
-            $article->dislikes_id = NULL;
-            $article->comments_id = NULL;
+            unset($article->text);
+            unset($article->likes_id);
+            unset($article->dislikes_id);
+            unset($article->comments_id);
         }
 
         return $articles;
@@ -41,7 +41,11 @@ class ArticlesController extends Controller
     private function fiterComentsForResponse($comments = []) {
         foreach ($comments as $comment) {
            $user = WebsiteUsers::find($comment->user_id);
-           $comment->user_id = NULL;
+           unset($comment->user_id);
+           unset($comment->updated_at);
+           unset($comment->id);
+           unset($comment->text_id);
+
            $comment->userName = $user->first_name.' '.$user->last_name;
         }
 
@@ -51,7 +55,10 @@ class ArticlesController extends Controller
     private function fiterLikesForResponse($likes = []) {
         foreach ($likes as $like) {
            $user = WebsiteUsers::find($like->user_id);
-           $like->user_id = NULL;
+           unset($like->text_id);
+           unset($like->id);
+           unset($like->updated_at);
+
            $like->userName = $user->first_name.' '.$user->last_name;
         }
 
@@ -61,7 +68,10 @@ class ArticlesController extends Controller
     private function fiterDislikesForResponse($dislikes = []) {
         foreach ($dislikes as $dislike) {
            $user = WebsiteUsers::find($dislike->user_id);
-           $dislike->user_id = NULL;
+           unset($dislike->text_id);
+           unset($dislike->id);
+           unset($dislike->updated_at);
+
            $dislike->userName = $user->first_name.' '.$user->last_name;
         }
 
@@ -323,37 +333,76 @@ class ArticlesController extends Controller
         $article['coments'] = $this->fiterComentsForResponse($coments);
         $article['likes'] =  $this->fiterLikesForResponse($likes);
         $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
-
+        
+        unset($article->likes_id);
+        unset($article->dislikes_id);
+        unset($article->comments_id);
+        
         Log::info('GET ARTICLE  : | '.$id .' |');
 
         return Response::json($article, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
-    public function action(Request $request, $id)
+    static public function action(Request $request, $id)
     {
-        $input = $request->only(['action', 'userId']);
+        $input = $request->only(['action', 'userId', 'comment']);
         if ($input['action'] === 'comment') {
             $comment = new Comment;
 
-            $comment->user_id = $input->userId;
-            $comment->comment = $input->comment;
+            $comment->user_id = $input['userId'];
+            $comment->comment = $input['comment'];
             $comment->text_id = $id;
             $comment->save();
 
         } else if ($input['action'] === 'like') {
+            $isUserAlreadyLikedText =
+                Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
+                    ->get();
+    
+            if (count($isUserAlreadyLikedText) !== 0) {
+                Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
+                    ->delete();
+
+                return;
+            } else {
+                DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
+                    ->delete();
+            }
+
             $like = new Like;
 
-            $like->user_id = $input->userId;
+            $like->user_id = $input['userId'];
             $like->text_id = $id;
             $like->save();
         } else if ($request['action'] === 'dislike') {
-            $dislike = new DisLikeLike;
+            $isUserAlreadyDislikedText =
+                DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
+                    ->get();
 
-            $dislike->user_id = $input->userId;
+
+            if (count($isUserAlreadyDislikedText) !== 0) {
+                DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
+                    ->delete();
+
+                return;
+            } else {
+                Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
+                    ->delete();
+            }
+
+            Log::info('DISLIKE QUERY NEW: | '. $isUserAlreadyDislikedText .' |');
+
+            $dislike = new DisLike;
+
+            $dislike->user_id = $input['userId'];
             $dislike->text_id = $id;
             $dislike->save();
         } else {
             return "{'satus':'Unknown action'}";
+        } 
+
+        if ($request['test']) {
+            return;
         }
         
         $article = Articles::find($id);
@@ -424,7 +473,7 @@ class ArticlesController extends Controller
         }
 
 
-        Log::info('CATEGORIES COUNTER REQUESTED FOR DATE: | '. $timestring .' | '. $timestamp .' | ');
+        Log::info('CATEGORIES COUNTER REQUESTED FOR DATE: | '. $timestring .' |');
         return json_encode((object)$responseOject);
     }
 }

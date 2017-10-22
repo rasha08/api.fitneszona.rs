@@ -30,7 +30,7 @@
 
                     <!-- Branding Image -->
                     <a class="navbar-brand" href="{{ url('api/public/home') }}">
-                        {{ config('app.name', 'Fitnes Zona') }}
+                        API Fitnes Zona
                     </a>
                 </div>
 

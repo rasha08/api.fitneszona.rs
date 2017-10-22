@@ -18,7 +18,7 @@
                                    <select class="form-control" id="home-page" name="home_page">
                                        <option value={{ $data['configuration']['home_page'] }}>{{ $data['configuration']['home_page'] }}</option>
                                        @foreach($data['validHomePageChoices'] as $home_page)
-                                           <option value={{ $home_page }}>{{ $home_page }}</option>
+                                           <option value={{ $home_page }}>{{ $nameSlug = preg_replace('/_/', ' ', $home_page) }}</option>
                                        @endforeach
                                    </select>
                                    @if ($errors->has('home_page'))
@@ -146,6 +146,23 @@
                               @endif
                             </div>
                            </div>
+                            @foreach($data['validHomePageChoices'] as $category)
+                            <br><hr><br>
+                            <div class="form-group{{ $errors->has($category) ? ' has-error' : '' }}">
+                            <label class="col-md-8 control-label">Da li je stranica <span style="font-size: 1.5em">{{ preg_replace('/_/', ' ', $category)  }}</span> omogucena?</label>
+                             <div class="checkbox left col-md-4"> 
+                               <label for="{{$category}}" class="left col-md-12 control-label">
+                                <input name="{{$category}}" id="{{ $category }}" type="checkbox" {{ in_array($category,$data['activeCategories']) ? 'checked' : '' }}>
+                                Omoguci kategoriju
+                              </label>
+                              @if ($errors->has($category))
+                                <span class="help-block">
+                                   <strong>{{ $errors->first($category) }}</strong>
+                                </span>
+                              @endif
+                            </div>
+                           </div>
+                           @endforeach
                            <br><hr><br>
                            <div class="form-group{{ $errors->has('banner_image_url') ? ' has-error' : '' }}">
                                <label for="banner_image_url" class="col-md-4 control-label">Url adresa banner slike:</label>

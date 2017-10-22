@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\WebsiteUsers;
+use App\Articles;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterUserRequest;
 use Log;
@@ -29,7 +30,7 @@ class WebsiteUsersController extends Controller
      */
     public function create()
     {
-        return '{status:"Route is not available to Front-End App"}';
+        return '{"status":"Route is not available to Front-End App"}';
     }
 
     /**
@@ -40,15 +41,21 @@ class WebsiteUsersController extends Controller
      */
     public function store(RegisterUserRequest $request)
     {   
+        $user = WebsiteUsers::where('email',  $request->email)->first();
+
+        if ($user) {
+            return '{"status":"user already registered"}';
+        }
+
         $user = new WebsiteUsers;
 
         $user->first_name = $request->firstName;
         $user->last_name = $request->lastName;
         $user->email = $request->email;
         $user->password = $request->password;
-        $user->timestamps();
-
+        $user->visited_text_id = '';
         $user->save();
+
         Log::info('CREATED USER | '.$user->email.' | ');
 
         return '{"status":"registration success"}';
@@ -64,7 +71,14 @@ class WebsiteUsersController extends Controller
     {
         Log::info('GET USER | '.$id.' | ');
 
-        return WebsiteUsers::find($id);
+        $user = WebsiteUsers::find($id);
+        $user->visited_categories = explode('|', $user->visited_categories);
+        $user->visited_tags = explode('|', $user->visited_tags);
+        $user->liked_categories = explode('|', $user->liked_categories);
+        $user->liked_tags = explode('|', $user->liked_tags);
+        $user->visited_text_id = explode('|', $user->visited_text_id);
+
+        return $user;
     }
 
     /**
@@ -95,7 +109,7 @@ class WebsiteUsersController extends Controller
         $user->save();
         Log::info('UPDATED USER | '.$id.' | ');
 
-        return '{"status":"succcess"}';
+        return '{"status":"update data success"}';
     }
 
     /**
@@ -112,39 +126,46 @@ class WebsiteUsersController extends Controller
         return '{"status":"success"}';
     }
 
-    public function action(Request $request, $id)
+    static public function action(Request $request, $id)
     {
         $user = WebsiteUsers::find($id);
+        $article = Articles::find($request['textId']);
 
-        if ($request['action'] === 'addVisitedCategory') {
-            if (!$user->visited_categories) {
-                $user->visited_categories = $request['value'];
-            } else if (strrpos($user->visited_categories, $request['value']) === false) {
-                $user->visited_categories = $user->visited_categories.'|'.$request['value'];
-            } 
-        } else if ($request['action'] === 'addVisitedTag') {
-            if (!$user->visited_tags) {
-                $user->visited_tags = $request['value'];
-            } else if (strrpos($user->visited_tags, $request['value']) === false) {
-                $user->visited_tags = $user->visited_tags.'|'.$request['value'];
-            } 
-        } else if ($request['action'] === 'addLikedCategory') {
+        if ($request['action'] === 'addLikedCategory') {
             if (!$user->liked_categories) {
-                $user->liked_categories = $request['value'];
-            } else if (strrpos($user->liked_categories, $request['value']) === false) {
-                $user->liked_categories = $user->liked_categories.'|'.$request['value'];
+                $user->liked_categories = $article->category;
+            } else if (strrpos($user->liked_categories, $article->category) === false) {
+                $user->liked_categories = $user->liked_categories.'|'.$article->category;
             } 
         } else if ($request['action'] === 'addLikedTag') {
+            $tag = $request['value'];
             if (!$user->liked_tags) {
-                $user->liked_tags = $request['value'];
-            } else if (strrpos($user->liked_tags, $request['value']) === false) {
-                $user->liked_tags = $user->liked_tags.'|'.$request['value'];
+                $user->liked_tags = $tag;
+            } else if (strrpos($user->liked_tags, $tag) === false) {
+                $user->liked_tags = $user->liked_tags.'|'.$tag;
             } 
         } else if ($request['action'] === 'addTextToVisited') {
-            if (!$user->visited_text_id) {
-                $user->visited_text_id = $request['value'];
-            } else if (strrpos($user->visited_text_id, $request['value']) === false) {
-                $user->visited_text_id = $user->visited_text_id.'|'.$request['value'];
+            $article->seen_times = $article->seen_times + 1;
+            $article->save();
+
+            if (!$user->visited_text_id) { 
+                $user->visited_text_id = $article->id;
+            } else if (strrpos($user->visited_text_id, (string)$article->id) == false) {
+                $user->visited_text_id = $user->visited_text_id.'|'.$article->id;
+
+                if (!$user->visited_categories) {
+                    $user->visited_categories = $article->category;
+                } else if (strrpos($user->visited_categories, $article->category) == false) {
+                    $user->visited_categories = $user->visited_categories.'|'.$article->category;
+                }
+                $tags = explode('|', $article->tags);
+                foreach ($tags as $tag) {
+                   if (!$user->visited_tags) {
+                    $user->visited_tags = $tag;
+                    } else if (strrpos($user->visited_tags, $tag) == false) {
+                        $user->visited_tags = $user->visited_tags.'|'.$tag;
+                    } 
+                }
             } 
         } else {
             return '"status": "unknown action"';
