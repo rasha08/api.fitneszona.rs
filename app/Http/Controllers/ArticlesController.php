@@ -33,6 +33,7 @@ class ArticlesController extends Controller
             unset($article->likes_id);
             unset($article->dislikes_id);
             unset($article->comments_id);
+            $article->tags = explode('|', $article->tags);
         }
 
         return $articles;
@@ -76,6 +77,23 @@ class ArticlesController extends Controller
         }
 
         return $dislikes;
+    }
+
+    private function filterArticleForResponse($article)
+    {
+        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+
+        $article['coments'] = $this->fiterComentsForResponse($coments);
+        $article['likes'] =  $this->fiterLikesForResponse($likes);
+        $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
+        $article['tags'] = explode('|', $article->tags);
+        unset($article->likes_id);
+        unset($article->dislikes_id);
+        unset($article->comments_id);
+
+        return $article;
     }
     /**
      * Display a listing of the resource.
@@ -326,17 +344,19 @@ class ArticlesController extends Controller
     public function article($id)
     {
         $article = Articles::find($id);
-        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
 
-        $article['coments'] = $this->fiterComentsForResponse($coments);
-        $article['likes'] =  $this->fiterLikesForResponse($likes);
-        $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
-        
-        unset($article->likes_id);
-        unset($article->dislikes_id);
-        unset($article->comments_id);
+        if (!$article) {
+            $articles = Articles::where('article_title_url_slug', '=', $id)->get();
+
+            if (count($articles) === 0) {
+                Log::info('GET ARTICLE  : | '.$id .' | NOT FOUND |'.$articles);
+                return '{"status":"article not found"}';
+            }
+
+            $article = $articles[0];
+        }
+
+        $article = $this->filterArticleForResponse($article);
         
         Log::info('GET ARTICLE  : | '.$id .' |');
 
@@ -406,13 +426,8 @@ class ArticlesController extends Controller
         }
         
         $article = Articles::find($id);
-        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
 
-        $article['coments'] = $this->fiterComentsForResponse($coments);
-        $article['likes'] =  $this->fiterLikesForResponse($likes);
-        $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
+        $article = $this->filterArticleForResponse($article);
 
         Log::info('GET ARTICLE: | '.$id .' |  AFTER USER ACTION : | '.strtoupper($request['action']) .' |');
 
@@ -448,13 +463,15 @@ class ArticlesController extends Controller
         $nameSlug = preg_replace('/\s+/', ' ', $nameSlug);
         $nameSlug = preg_replace('/\s+/', '-', $nameSlug);
         $nameSlug = preg_replace('/\?/', '', $nameSlug);
-        $nameSlug = preg_replace('/\./', '', $nameSlug);
+        $nameSlug = preg_replace('/(\d+).(\d+)/', '$1$2', $nameSlug);
         $nameSlug = preg_replace('/\,/', '', $nameSlug);
         $nameSlug = preg_replace('/\!/', '', $nameSlug);
         $nameSlug = preg_replace('/\:/', '', $nameSlug);
         $nameSlug = preg_replace('/\;/', '', $nameSlug);
         $nameSlug = preg_replace('/\(/', '', $nameSlug);
         $nameSlug = preg_replace('/\)/', '', $nameSlug);
+        $nameSlug = preg_replace('/\-–-/', '-', $nameSlug);
+        $nameSlug = preg_replace('/\&/', '', $nameSlug);
 
         return $nameSlug;
     }
