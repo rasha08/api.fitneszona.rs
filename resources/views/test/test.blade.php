@@ -7,9 +7,12 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Test Zona</div>
                 @if($data['success'])
-                <h1 class="alert alert-success">Akcija je uspesno izvrsena!</h1>
+                <h3 class="alert alert-success">Akcija je uspesno izvrsena!</h3>
                 @endif
-                <form class="form" role="form" method="POST" action="{{ url('/test/action') }}">
+                @if(@$data['action'])
+                <h4 class="alert text-info">predhodna akcija <b>{{ $data['action'] }}</b> je izvrsena nad tekstom <b>ID: {{ $data['textId'] }}</b> korisnik <b>{{ $data['user'] }}</b></h4>
+                @endif
+                <form class="form" role="form" method="POST" action="{{ url('/test') }}">
                            {{ csrf_field() }}
                       <div class="form-group{{ $errors->has('test-user') ? ' has-error' : '' }}">
                            <label for="test-user" class="col-md-4 control-label">Izaberi Test Korisnika</label>
@@ -49,12 +52,13 @@
                            <label for="action" class="col-md-6 control-label">Izaberi akciju</label>
                            <div class="col-md-6">
                                <select class="form-control" id="action" name="action" onchange="showCommentBox(this.value)">
-                                    <option value="like" >Like Teksta</option>
-                                    <option value="dislike">DisLike Teksta</option>
-                                    <option value="comment">Komentarisi Tekst</option>
-                                    <option value="addTextToVisited">Dodaj Tekst U Posecene Tekstove</option>
-                                    <option value="addLikedCategory">Dodaj Kategoriju Teksta U Omiljene</option>
-                                    <option value="addLikedTag">Dodaj Tag U Omiljene</option>
+                                    <option value="like" >Sviđa mi se tekst</option>
+                                    <option value="dislike">Ne sviđa mi se tekst</option>
+                                    <option value="comment">Komentarisi tekst</option>
+                                    <option value="addTextToVisited">Dodaj tekst u posećene tekstove</option>
+                                    <option value="addLikedCategory">Dodaj kategoriju teksta u omiljene</option>
+                                    <option value="addLikedTag">Dodaj oznaku (TAG) u omiljene</option>
+                                    <option value="setSeenTimes">Postavi vrednost za "seen_times" za tekst</option>
                                </select>
                                @if ($errors->has('action'))
                                    <span class="help-block">
@@ -87,6 +91,18 @@
                                @endif
                            </div>
                        </div>
+                       <div class="form-group{{ $errors->has('seen_times') ? ' has-error' : '' }}" id="setSeenTimes">
+                        <br><br><hr><br>
+                           <label for="seen_times" class="col-md-6 control-label">Unesi vrednost za viđeno puta ovog teksta:</label>
+                           <div class="col-md-6">
+                               <input id="seen_times" type="number" class="form-control" name="seen_times">
+                               @if ($errors->has('seen_times'))
+                                   <span class="help-block">
+                                       <strong>{{ $errors->first('seen_times') }}</strong>
+                                   </span>
+                               @endif
+                           </div>
+                       </div>
                        <br><br><hr>
                        <div class="clearfix"></div>
                        <div class="form-group">
@@ -106,7 +122,7 @@
 <script type="text/javascript">
     document.getElementById('commentBox').style.display = 'none';
     document.getElementById('likedTag').style.display = 'none';
-
+    document.getElementById('setSeenTimes').style.display = 'none';
 
     function showCommentBox (value){
         if(value==='comment') {
@@ -117,10 +133,19 @@
            document.getElementById('likedTag').style.display = 'block';
 
            return;
+        } else if (value === 'setSeenTimes') {
+           document.getElementById('setSeenTimes').style.display = 'block';
+
+           return;
         }
 
         document.getElementById('commentBox').style.display = 'none';
         document.getElementById('likedTag').style.display = 'none';
+        document.getElementById('setSeenTimes').style.display = 'none';
     }
+
+    setTimeout(() => {
+        document.querySelector('.alert-success').style.display = 'none';
+    }, 2000);
 </script>
 @endsection

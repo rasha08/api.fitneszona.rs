@@ -56,5 +56,5 @@ Route::group(['middleware' => ['api', 'auth']], function () {
 Route::get('api/configuration/{id}', 'WebsiteConsfigurationController@getConfiguration')->middleware('api');
 Route::get('api/configuration/{id}/categories', 'WebsiteConsfigurationController@getActiveCategories')->middleware('api');
 
-Route::post('test/action', 'TestController@action')->middleware('api');
+Route::post('test', 'TestController@action')->middleware(['auth','api']);
 Route::get('test', 'TestController@index')->middleware(['auth','api']);

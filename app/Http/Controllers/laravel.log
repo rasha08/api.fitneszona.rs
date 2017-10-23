@@ -382,3 +382,67 @@
 [2017-10-21 10:55:39] production.INFO: CONFIGURATION UPDATED  
 [2017-10-21 11:08:36] production.INFO: CONFIGURATION UPDATED FOR WEBSITE | 1 |  
 [2017-10-21 11:08:49] production.INFO: ACTIVE CATEGORIES FETCHED FOR WEBSITE | 1 |  
+[2017-10-21 11:30:18] production.INFO: GET ALL USERS  
+[2017-10-21 11:30:21] production.INFO: GET ALL USERS  
+[2017-10-21 11:30:33] production.INFO: GET ALL USERS  
+[2017-10-21 15:18:51] production.INFO: USER | 5 | ACTION: | addTextToVisited |  
+[2017-10-21 15:19:01] production.INFO: USER | 5 | ACTION: | addLikedCategory |  
+[2017-10-21 15:19:15] production.INFO: USER | 5 | ACTION: | addLikedTag |  
+[2017-10-21 15:19:40] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-21 16:34:42] production.INFO: ACTIVE CATEGORIES FETCHED FOR WEBSITE | 1 |  
+[2017-10-21 16:34:56] production.INFO: CONFIGURATION UPDATED FOR WEBSITE | 1 |  
+[2017-10-21 16:35:02] production.INFO: ACTIVE CATEGORIES FETCHED FOR WEBSITE | 1 |  
+[2017-10-21 16:35:16] production.INFO: GET ALL USERS  
+[2017-10-21 16:35:44] production.INFO: UPDATED ARTICLE: | 147 |   
+[2017-10-21 16:37:30] production.INFO: GET ARTICLE  : | 4 |  
+[2017-10-21 16:38:11] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-21 16:38:55] production.INFO: GET ALL ARTICLES | 140 |   
+[2017-10-21 16:39:10] production.INFO: GET TOP ARTICLES  
+[2017-10-21 16:39:19] production.INFO: GET TOP ARTICLES  
+[2017-10-21 16:39:34] production.INFO: GET ALL ARTICLES FROM CATEGORY : | TRENING |  
+[2017-10-21 16:39:45] production.INFO: GET ALL ARTICLES FROM CATEGORY : | SAVETI |  
+[2017-10-21 16:39:49] production.INFO: GET TOP ARTICLES FROM CATEGORY : | SAVETI |  
+[2017-10-21 16:39:51] production.INFO: GET TOP ARTICLES FROM CATEGORY : | SAVETI |  
+[2017-10-21 16:39:57] production.INFO: GET LATEST ARTICLES FROM CATEGORY : | SAVETI |  
+[2017-10-21 16:40:14] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-22 05:53:06] production.INFO: GET ARTICLE  : | 75 |  
+[2017-10-22 07:15:46] production.INFO: GET USER | 5 |   
+[2017-10-22 07:16:11] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-22 07:16:58] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-22 07:19:41] production.INFO: USER | 5 | ACTION: | addTextToVisited |  
+[2017-10-22 07:19:55] production.INFO: GET USER | 1 |   
+[2017-10-22 07:20:00] production.INFO: GET USER | 5 |   
+[2017-10-22 07:20:19] production.INFO: USER | 5 | ACTION: | addTextToVisited |  
+[2017-10-22 07:20:33] production.INFO: GET USER | 5 |   
+[2017-10-22 07:21:22] production.INFO: GET ALL ARTICLES | 140 |   
+[2017-10-22 07:24:37] production.INFO: GET ALL ARTICLES | 140 |   
+[2017-10-22 07:42:45] production.INFO: GET ALL ARTICLES | 130 |   
+[2017-10-22 07:58:06] production.INFO: GET ARTICLE  : | 14 |  
+[2017-10-22 07:59:35] production.INFO: GET ARTICLE  : | 14 |  
+[2017-10-22 08:00:00] production.INFO: GET ARTICLE  : | 14 |  
+[2017-10-22 08:01:37] production.INFO: GET ARTICLE  : | 14 |  
+[2017-10-22 08:01:46] production.INFO: GET ARTICLE  : | 13 | NOT FOUND |  
+[2017-10-22 08:01:51] production.INFO: GET ARTICLE  : | 14 |  
+[2017-10-22 08:02:02] production.INFO: GET ARTICLE  : | crossfit | NOT FOUND |  
+[2017-10-22 08:02:44] production.INFO: GET ARTICLE  : | crossfit | NOT FOUND |  
+[2017-10-22 08:05:40] production.INFO: GET ARTICLE  : | crossfit |  
+[2017-10-22 08:05:45] production.INFO: GET ARTICLE  : | 14 |  
+[2017-10-22 08:05:56] production.INFO: GET ARTICLE  : | crossfit-jos | NOT FOUND |[]  
+[2017-10-22 08:06:02] production.INFO: GET ALL ARTICLES | 130 |   
+[2017-10-22 08:06:12] production.INFO: GET ARTICLE  : | koji-oblik-fizičke-aktivnosti-je-najbolji-za-mozak |  
+[2017-10-22 08:06:57] production.INFO: GET ALL ARTICLES FROM CATEGORY : | TRENING |  
+[2017-10-22 08:09:24] production.INFO: GET ARTICLE  : | {id} | NOT FOUND |[]  
+[2017-10-22 08:09:30] production.INFO: GET ARTICLE  : | 14 |  
+[2017-10-22 08:09:54] production.INFO: GET ARTICLE  : | {article_title_url_slug} | NOT FOUND |[]  
+[2017-10-22 08:10:19] production.INFO: GET ARTICLE  : | crossfit |  
+[2017-10-22 08:22:30] production.INFO: DISLIKE QUERY NEW: | [] |  
+[2017-10-22 08:22:58] production.INFO: GET ARTICLE  : | 23 |  
+[2017-10-22 08:43:27] production.INFO: GET ARTICLE  : | 8 |  
+[2017-10-22 08:55:57] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Ispravan način ishrane za aktivne trudnice u teretani |   
+[2017-10-22 08:57:08] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Najbitniji minerali za funkcionisanje organizma |   
+[2017-10-22 09:00:04] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Ispravan način ishrane za aktivne trudnice u teretani |   
+[2017-10-22 09:01:56] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Ispravan način ishrane za aktivne trudnice u teretani |    
+[2017-10-22 17:26:28] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-22 17:29:01] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-22 18:03:07] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-22 18:20:36] production.INFO: GET ARTICLE  : | 1 |  

@@ -30,9 +30,6 @@ class ArticlesController extends Controller
     {
         foreach ($articles as $article) {
             unset($article->text);
-            unset($article->likes_id);
-            unset($article->dislikes_id);
-            unset($article->comments_id);
             $article->tags = explode('|', $article->tags);
         }
 
@@ -89,9 +86,6 @@ class ArticlesController extends Controller
         $article['likes'] =  $this->fiterLikesForResponse($likes);
         $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
         $article['tags'] = explode('|', $article->tags);
-        unset($article->likes_id);
-        unset($article->dislikes_id);
-        unset($article->comments_id);
 
         return $article;
     }
@@ -143,17 +137,28 @@ class ArticlesController extends Controller
         $article->category = $request->input('category');
         $article->article_title_url_slug = $this->createTitleUrlSlug($request->input('title'));
         $article->seen_times = 0;
-        $article->save();
+        
+        $success;
+
+        try {
+            $article->save();
+            $success = 'create';
+
+            Log::info('ADDED ARTICLE: | '. $article->id .' | ');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::info('ARTICLE IS ALREADY IN DATABASE: | '. $request->input('title') .' | ');
+            $success = 'already in db';
+        }
       
-        $articles = Articles::where('id', '>', 0)
-            ->orderBy('updated_at', 'desc')
+       $articles = Articles::where('id', '>', 0)
+            ->orderBy('created_at', 'desc')
             ->simplePaginate(10);
         
         $data = [
             'articles' => $articles,
-            'success' => 'create'
+            'success' => $success,
         ];
-        Log::info('ADDED ARTICLE: | '. $article->id .' | ');
 
         return view('articles.articles')->with('data', $data);
     }
@@ -366,6 +371,8 @@ class ArticlesController extends Controller
     static public function action(Request $request, $id)
     {
         $input = $request->only(['action', 'userId', 'comment']);
+        $article = Articles::find($id);
+
         if ($input['action'] === 'comment') {
             $comment = new Comment;
 
@@ -374,19 +381,29 @@ class ArticlesController extends Controller
             $comment->text_id = $id;
             $comment->save();
 
+            $article->number_of_comments = $article->number_of_comments ? $article->number_of_comments + 1 : 1;
+            $article->save();
         } else if ($input['action'] === 'like') {
             $isUserAlreadyLikedText =
                 Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
                     ->get();
-    
+
             if (count($isUserAlreadyLikedText) !== 0) {
                 Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
                     ->delete();
 
+                $article->number_of_likes = $article->number_of_likes ? $article->number_of_likes - 1 : 0;
+                $article->save();
+
                 return;
             } else {
-                DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
-                    ->delete();
+                $dislikeFromUser = DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])->get();
+                if (count($dislikeFromUser) !== 0) {
+                    $dislikeFromUser = DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
+                        ->delete();
+                    
+                    $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes - 1 : 0;
+                }     
             }
 
             $like = new Like;
@@ -394,29 +411,40 @@ class ArticlesController extends Controller
             $like->user_id = $input['userId'];
             $like->text_id = $id;
             $like->save();
+
+             $article->number_of_likes = $article->number_of_likes ?  $article->number_of_likes + 1 : 1;
+             $article->save();
         } else if ($request['action'] === 'dislike') {
             $isUserAlreadyDislikedText =
                 DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
                     ->get();
 
-
             if (count($isUserAlreadyDislikedText) !== 0) {
                 DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
                     ->delete();
+                 
+                $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes - 1 : 0;
+                $article->save();
 
                 return;
             } else {
-                Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
-                    ->delete();
+                $likeFromUser = Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])->get();
+                if (count($likeFromUser) !== 0) {
+                    $dislikeFromUser = Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
+                        ->delete();
+                    
+                    $article->number_of_likes = $article->number_of_likes ? $article->number_of_likes - 1 : 0;
+                }
             }
-
-            Log::info('DISLIKE QUERY NEW: | '. $isUserAlreadyDislikedText .' |');
 
             $dislike = new DisLike;
 
             $dislike->user_id = $input['userId'];
             $dislike->text_id = $id;
             $dislike->save();
+
+            $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes + 1 : 1;
+            $article->save();
         } else {
             return "{'satus':'Unknown action'}";
         } 

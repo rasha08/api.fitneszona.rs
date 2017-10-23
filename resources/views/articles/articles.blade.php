@@ -18,6 +18,10 @@
                     <h2 class="alert alert-success">
                         <strong>Uspesno ste obrisali tekst! </strong>
                     </h2>
+                  @elseif (@$data['success'] ==='already in db')
+                    <h2 class="alert alert-danger">
+                        <strong>Dati tekst je vec unet u bazu podataka! </strong>
+                    </h2>
                  @endif
                 <div class="panel-body">
                     @if (session('status'))

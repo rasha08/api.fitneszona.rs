@@ -20,7 +20,7 @@ class TestController extends Controller
         $testUsers = WebsiteUsers::where('email', 'like', '%@fitneszona.rs%')->get();
         $articles = Articles::all();
 
-        $data = ['users' => $testUsers, 'articles' => $articles, 'success' => null];
+        $data = ['users' => $testUsers, 'articles' => $articles, 'success' => null, 'action' => null, 'textId' => null, 'user' => null];
 
         return view('test.test')->with('data', $data);
     }
@@ -56,15 +56,24 @@ class TestController extends Controller
                 $request['comment'] = $request->input('comment_text');
                 ArticlesController::action($request, $textId);
                 break;
+            case 'setSeenTimes':
+                $seenTimes = $request->input('seen_times');
+                $article = Articles::find($textId);
+                $article->seen_times = $seenTimes;
+                $article->save();
+                break;
             default:
                 break;
         }
 
         $testUsers = WebsiteUsers::where('email', 'like', '%@fitneszona.rs%')->get();
         $articles = Articles::all();
+        $user = WebsiteUsers::find($userId);
+        $user = $user->first_name.' '.$user->last_name;
+        $data = ['users' => $testUsers, 'articles' => $articles, 'success' => 'success', 'action' => $action, 'textId'=> $textId, 'user' => $user];
 
-        $data = ['users' => $testUsers, 'articles' => $articles, 'success' => 'success'];
+        Log::info('TEST ACTION | '.$action.' |');
 
-        return redirect('/test')->with('data', $data);
+        return view('test.test')->with('data', $data);
     }
 }
