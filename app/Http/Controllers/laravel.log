@@ -440,9 +440,28 @@
 [2017-10-22 08:43:27] production.INFO: GET ARTICLE  : | 8 |  
 [2017-10-22 08:55:57] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Ispravan način ishrane za aktivne trudnice u teretani |   
 [2017-10-22 08:57:08] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Najbitniji minerali za funkcionisanje organizma |   
-[2017-10-22 09:00:04] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Ispravan način ishrane za aktivne trudnice u teretani |   
-[2017-10-22 09:01:56] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Ispravan način ishrane za aktivne trudnice u teretani |    
+[2017-10-22 09:00:04] production.INFO: ARTICLE IS ALREADY IN DATABASE: | Saveti fitnes stručnjaka: Ispravan način ishrane za aktivne trudnice u teretani |    
 [2017-10-22 17:26:28] production.INFO: GET ARTICLE  : | 1 |  
 [2017-10-22 17:29:01] production.INFO: GET ARTICLE  : | 1 |  
 [2017-10-22 18:03:07] production.INFO: GET ARTICLE  : | 1 |  
 [2017-10-22 18:20:36] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-22 18:30:16] production.INFO: TEST ACTION | comment |  
+[2017-10-22 18:30:32] production.INFO: GET ARTICLE  : | 1 |  
+[2017-10-22 18:30:47] production.INFO: GET ALL ARTICLES | 130 |   
+[2017-10-23 10:12:42] production.INFO: GET ARTICLE  : | 14 |  
+[2017-10-23 10:12:42] production.INFO: GET ARTICLE  : | {id} | NOT FOUND |[]  
+[2017-10-23 10:12:42] production.INFO: GET ARTICLE  : | {article_title_url_slug} | NOT FOUND |[]  
+[2017-10-23 10:12:42] production.INFO: GET ARTICLE  : | crossfit |  
+[2017-10-23 15:08:25] production.INFO: CATEGORIES COUNTER REQUESTED FOR DATE: |  |  
+[2017-10-23 15:15:13] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-23 15:15:30] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-23 15:16:15] production.INFO: ACTIVE CATEGORIES FETCHED FOR WEBSITE | 1 |  
+[2017-10-23 15:16:21] production.INFO: ACTIVE CATEGORIES FETCHED FOR WEBSITE | 1 |  
+[2017-10-23 15:23:46] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-23 15:29:32] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-23 15:29:34] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-23 15:29:35] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-23 15:30:02] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-23 15:30:50] production.INFO: GET CONFIGURATION FOR WEBSITE ID: | 1 |  
+[2017-10-23 15:31:01] production.ERROR: exception 'Symfony\Component\Debug\Exception\FatalErrorException' with message 
+[2017-10-23 15:32:58] production.INFO: GET ARTICLE CATEGORY AND TAGS : | 14 |  

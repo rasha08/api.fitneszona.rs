@@ -467,9 +467,16 @@ class ArticlesController extends Controller
         $article = Articles::find($id);
 
         $category = $article->category;
-        $tags = $article->tags;
+        $tags = explode('|', $article->tags);
 
-        return "{'category:'".$category.",tags:".$tags."}";
+        $response = [
+            'category' => $category,
+            'tags' => $tags
+        ];
+
+        Log::info('GET ARTICLE CATEGORY AND TAGS : | '.$id .' |');
+
+        return Response::json((object)$response, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
     public function createUrlSlugs()
@@ -482,6 +489,9 @@ class ArticlesController extends Controller
             $article->article_title_url_slug = $this->createTitleUrlSlug($article->title);
             $article->save();
         }
+
+        Log::info('CREATED URL SLUGS FOR ALL ARTICLES');
+
     }
 
     private function createTitleUrlSlug($title)

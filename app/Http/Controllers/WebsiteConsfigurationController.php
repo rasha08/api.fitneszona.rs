@@ -153,8 +153,10 @@ class WebsiteConsfigurationController extends Controller
     public function getConfiguration($id)
     {
         Log::info('GET CONFIGURATION FOR WEBSITE ID: | '.$id.' |');
+        $configuration = WebsiteConsfiguration::find($id);
 
-        return WebsiteConsfiguration::find($id);
+        $configuration->active_categories = explode('|', $configuration->active_categories);
+        return $configuration;
     }
 
     public function getActiveCategories($id)
