@@ -72,6 +72,11 @@ class WebsiteUsersController extends Controller
         Log::info('GET USER | '.$id.' | ');
 
         $user = WebsiteUsers::find($id);
+
+        if (!$user) {
+            return "{'status':'non existing user'}";
+        }
+        
         $user->visited_categories = explode('|', $user->visited_categories);
         $user->visited_tags = explode('|', $user->visited_tags);
         $user->liked_categories = explode('|', $user->liked_categories);

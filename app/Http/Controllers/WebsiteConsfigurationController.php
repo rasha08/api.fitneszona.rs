@@ -161,6 +161,12 @@ class WebsiteConsfigurationController extends Controller
 
     public function getActiveCategories($id)
     {   
+
+        try {
+            $configuration = WebsiteConsfiguration::find($id);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return "{'status':'configuration not found'}";
+        }
         $configuration = WebsiteConsfiguration::find($id);
 
         $activeCategories = explode('|', $configuration->active_categories);

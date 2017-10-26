@@ -23,16 +23,16 @@ Route::group(['middleware' => ['api', 'auth']], function () {
     Route::resource('articles', 'ArticlesController');
 });
 
-Route::get('api/articles/all', 'ArticlesController@all')->middleware('api');
-Route::get('api/articles/top', 'ArticlesController@top')->middleware('api');
-Route::get('api/articles/latest', 'ArticlesController@latest')->middleware('api');
-Route::get('api/articles/category/{category}', 'ArticlesController@category')->middleware('api');
-Route::get('api/articles/category/{category}/top', 'ArticlesController@categoryTopArticles')->middleware('api');
-Route::get('api/articles/category/{category}/latest', 'ArticlesController@categoryLatestArticles')->middleware('api');
-Route::get('api/articles/{id}', 'ArticlesController@article')->middleware('api');
-Route::get('api/articles/{id}/catgory-and-tags', 'ArticlesController@getArticleCategoryAndTags')->middleware('api');
-Route::get('api/articles/all/create-url-slugs', 'ArticlesController@createUrlSlugs')->middleware('api');
-Route::post('api/articles/all/counter', 'ArticlesController@counter')->middleware('api');
+Route::get('api/articles/all', 'ArticlesController@all')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/top', 'ArticlesController@top')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/latest', 'ArticlesController@latest')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/category/{category}', 'ArticlesController@category')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/category/{category}/top', 'ArticlesController@categoryTopArticles')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/category/{category}/latest', 'ArticlesController@categoryLatestArticles')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/{id}', 'ArticlesController@article')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/{id}/catgory-and-tags', 'ArticlesController@getArticleCategoryAndTags')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/all/create-url-slugs', 'ArticlesController@createUrlSlugs')->middleware(['api', 'throttle:500,1']);
+Route::post('api/articles/all/counter', 'ArticlesController@counter')->middleware(['api', 'throttle:500,1']);
 
 Route::post('api/articles/{id}/', 'ArticlesController@action')->middleware('api');
 
@@ -53,8 +53,8 @@ Route::post('api/users/{id}/{data}', 'WebsiteUsersController@getUserSpecificData
 Route::group(['middleware' => ['api', 'auth']], function () {
     Route::resource('configuration', 'WebsiteConsfigurationController');
 });
-Route::get('api/configuration/{id}', 'WebsiteConsfigurationController@getConfiguration')->middleware('api');
-Route::get('api/configuration/{id}/categories', 'WebsiteConsfigurationController@getActiveCategories')->middleware('api');
+Route::get('api/configuration/{id}', 'WebsiteConsfigurationController@getConfiguration')->middleware(['api', 'throttle:500,1']);
+Route::get('api/configuration/{id}/categories', 'WebsiteConsfigurationController@getActiveCategories')->middleware(['api', 'throttle:500,1']);
 
 Route::post('test', 'TestController@action')->middleware(['auth','api']);
 Route::get('test', 'TestController@index')->middleware(['auth','api']);
