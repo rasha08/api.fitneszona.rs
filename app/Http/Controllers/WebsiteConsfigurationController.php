@@ -127,6 +127,16 @@ class WebsiteConsfigurationController extends Controller
         $activeCategories = substr($activeCategories, 0, -1);
         $configuration->active_categories = $activeCategories;
 
+        $tagsPriorityList = '';
+        foreach ($this->validHomePageChoices as $tag) {
+            if ($request->input($tag)) {
+                $tagsPriorityList .= $category.'|';
+            }
+        }
+
+        $tagsPriorityList = substr($tagsPriorityList, 0, -1);
+        $configuration->tags_priority_list = $tagsPriorityList;
+
 
         $configuration->save();
 
@@ -174,5 +184,22 @@ class WebsiteConsfigurationController extends Controller
         Log::info('ACTIVE CATEGORIES FETCHED FOR WEBSITE | '.$id.' |');
 
         return json_encode((object)['activeCategories' => $activeCategories]);
+    }
+
+    public function getTagsPriority($id)
+    {   
+
+        try {
+            $configuration = WebsiteConsfiguration::find($id);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return "{'status':'configuration not found'}";
+        }
+        $configuration = WebsiteConsfiguration::find($id);
+
+        $tagsPriorityList = explode('|', $configuration->tags_priority_list);
+
+        Log::info('TAGS PRIORITY LIST FETCHED FOR WEBSITE | '.$id.' |');
+
+        return json_encode((object)['tagsPriorityList' => $tagsPriorityList]);
     }
 }

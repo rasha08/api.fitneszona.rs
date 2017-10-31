@@ -43,6 +43,7 @@ Route::group(['middleware' => ['api']], function () {
 Route::get('users', 'WebsiteUsersController@index')->middleware(['auth','api']);
 Route::delete('users/{id}', 'WebsiteUsersController@destroy')->middleware(['auth','api']);
 Route::post('users', 'WebsiteUsersController@store')->middleware('api');
+Route::get('api/users/{id}', 'WebsiteUsersController@show')->middleware('api');
 
 Route::post('api/users/action/{id}/', 'WebsiteUsersController@action')->middleware('api');
 Route::post('api/users/login', 'WebsiteUsersController@login')->middleware('api');
@@ -58,3 +59,5 @@ Route::get('api/configuration/{id}/categories', 'WebsiteConsfigurationController
 
 Route::post('test', 'TestController@action')->middleware(['auth','api']);
 Route::get('test', 'TestController@index')->middleware(['auth','api']);
+
+Route::get('api/search', 'SearchController@index')->middleware('api');

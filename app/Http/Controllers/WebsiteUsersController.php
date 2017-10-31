@@ -78,10 +78,10 @@ class WebsiteUsersController extends Controller
         }
         
         $user->visited_categories = explode('|', $user->visited_categories);
-        $user->visited_tags = explode('|', $user->visited_tags);
+        $user->visited_tags = array_unique(explode('|', $user->visited_tags));
         $user->liked_categories = explode('|', $user->liked_categories);
-        $user->liked_tags = explode('|', $user->liked_tags);
-        $user->visited_text_id = explode('|', $user->visited_text_id);
+        $user->liked_tags = array_unique(explode('|', $user->liked_tags));
+        $user->visited_text_id = array_unique(explode('|', $user->visited_text_id));
 
         return $user;
     }
@@ -155,7 +155,7 @@ class WebsiteUsersController extends Controller
 
             if (!$user->visited_text_id) { 
                 $user->visited_text_id = $article->id;
-            } else if (strrpos($user->visited_text_id, (string)$article->id) == false) {
+            } else if (strrpos($user->visited_text_id, (string)$article->id) === false) {
                 $user->visited_text_id = $user->visited_text_id.'|'.$article->id;
 
                 if (!$user->visited_categories) {
@@ -273,7 +273,12 @@ class WebsiteUsersController extends Controller
     }
 
     public function getUserSpecificData($id, $data) {
-        $user = WebsiteUsers::find($id);
+        try {
+           $user = WebsiteUsers::find($id);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return "{'status':'user not found'}";
+        }
+
 
         return $user['data'];
     }

@@ -14,7 +14,7 @@ use Log;
 
 class ArticlesController extends Controller
 {   
-    protected $validCategories = [
+    static public $validCategories = [
         'trening',
         'ishrana',
         'saveti',
@@ -26,11 +26,14 @@ class ArticlesController extends Controller
         'mrsavljenje'
     ];
 
+
     protected function filterForResponse($articles = [])
     {
         foreach ($articles as $article) {
-            unset($article->text);
-            $article->tags = explode('|', $article->tags);
+            $article->text = NULL;
+            $article->likes_id = NULL;
+            $article->dislikes_id = NULL;
+            $article->comments_id = NULL;
         }
 
         return $articles;
@@ -39,11 +42,7 @@ class ArticlesController extends Controller
     private function fiterComentsForResponse($comments = []) {
         foreach ($comments as $comment) {
            $user = WebsiteUsers::find($comment->user_id);
-           unset($comment->user_id);
-           unset($comment->updated_at);
-           unset($comment->id);
-           unset($comment->text_id);
-
+           $comment->user_id = NULL;
            $comment->userName = $user->first_name.' '.$user->last_name;
         }
 
@@ -53,10 +52,7 @@ class ArticlesController extends Controller
     private function fiterLikesForResponse($likes = []) {
         foreach ($likes as $like) {
            $user = WebsiteUsers::find($like->user_id);
-           unset($like->text_id);
-           unset($like->id);
-           unset($like->updated_at);
-
+           $like->user_id = NULL;
            $like->userName = $user->first_name.' '.$user->last_name;
         }
 
@@ -66,28 +62,11 @@ class ArticlesController extends Controller
     private function fiterDislikesForResponse($dislikes = []) {
         foreach ($dislikes as $dislike) {
            $user = WebsiteUsers::find($dislike->user_id);
-           unset($dislike->text_id);
-           unset($dislike->id);
-           unset($dislike->updated_at);
-
+           $dislike->user_id = NULL;
            $dislike->userName = $user->first_name.' '.$user->last_name;
         }
 
         return $dislikes;
-    }
-
-    private function filterArticleForResponse($article)
-    {
-        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-
-        $article['coments'] = $this->fiterComentsForResponse($coments);
-        $article['likes'] =  $this->fiterLikesForResponse($likes);
-        $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
-        $article['tags'] = explode('|', $article->tags);
-
-        return $article;
     }
     /**
      * Display a listing of the resource.
@@ -137,28 +116,17 @@ class ArticlesController extends Controller
         $article->category = $request->input('category');
         $article->article_title_url_slug = $this->createTitleUrlSlug($request->input('title'));
         $article->seen_times = 0;
-        
-        $success;
-
-        try {
-            $article->save();
-            $success = 'create';
-
-            Log::info('ADDED ARTICLE: | '. $article->id .' | ');
-
-        } catch (\Illuminate\Database\QueryException $e) {
-            Log::info('ARTICLE IS ALREADY IN DATABASE: | '. $request->input('title') .' | ');
-            $success = 'already in db';
-        }
+        $article->save();
       
-       $articles = Articles::where('id', '>', 0)
-            ->orderBy('created_at', 'desc')
+        $articles = Articles::where('id', '>', 0)
+            ->orderBy('updated_at', 'desc')
             ->simplePaginate(10);
         
         $data = [
             'articles' => $articles,
-            'success' => $success,
+            'success' => 'create'
         ];
+        Log::info('ADDED ARTICLE: | '. $article->id .' | ');
 
         return view('articles.articles')->with('data', $data);
     }
@@ -253,7 +221,7 @@ class ArticlesController extends Controller
     /**
     *  Returns all articles from Database
     */
-    public function all()
+     public function all()
     {
         $articles = Articles::all();;
 
@@ -349,113 +317,54 @@ class ArticlesController extends Controller
     public function article($id)
     {
         $article = Articles::find($id);
+        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
 
-        if (!$article) {
-            $articles = Articles::where('article_title_url_slug', '=', $id)->get();
+        $article['coments'] = $this->fiterComentsForResponse($coments);
+        $article['likes'] =  $this->fiterLikesForResponse($likes);
+        $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
 
-            if (count($articles) === 0) {
-                Log::info('GET ARTICLE  : | '.$id .' | NOT FOUND |'.$articles);
-                return '{"status":"article not found"}';
-            }
-
-            $article = $articles[0];
-        }
-
-        $article = $this->filterArticleForResponse($article);
-        
         Log::info('GET ARTICLE  : | '.$id .' |');
 
         return Response::json($article, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
-    static public function action(Request $request, $id)
+    public function action(Request $request, $id)
     {
-        $input = $request->only(['action', 'userId', 'comment']);
-        $article = Articles::find($id);
-
+        $input = $request->only(['action', 'userId']);
         if ($input['action'] === 'comment') {
             $comment = new Comment;
 
-            $comment->user_id = $input['userId'];
-            $comment->comment = $input['comment'];
+            $comment->user_id = $input->userId;
+            $comment->comment = $input->comment;
             $comment->text_id = $id;
             $comment->save();
 
-            $article->number_of_comments = $article->number_of_comments ? $article->number_of_comments + 1 : 1;
-            $article->save();
         } else if ($input['action'] === 'like') {
-            $isUserAlreadyLikedText =
-                Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
-                    ->get();
-
-            if (count($isUserAlreadyLikedText) !== 0) {
-                Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
-                    ->delete();
-
-                $article->number_of_likes = $article->number_of_likes ? $article->number_of_likes - 1 : 0;
-                $article->save();
-
-                return;
-            } else {
-                $dislikeFromUser = DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])->get();
-                if (count($dislikeFromUser) !== 0) {
-                    $dislikeFromUser = DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
-                        ->delete();
-                    
-                    $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes - 1 : 0;
-                }     
-            }
-
             $like = new Like;
 
-            $like->user_id = $input['userId'];
+            $like->user_id = $input->userId;
             $like->text_id = $id;
             $like->save();
-
-             $article->number_of_likes = $article->number_of_likes ?  $article->number_of_likes + 1 : 1;
-             $article->save();
         } else if ($request['action'] === 'dislike') {
-            $isUserAlreadyDislikedText =
-                DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
-                    ->get();
+            $dislike = new DisLikeLike;
 
-            if (count($isUserAlreadyDislikedText) !== 0) {
-                DisLike::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
-                    ->delete();
-                 
-                $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes - 1 : 0;
-                $article->save();
-
-                return;
-            } else {
-                $likeFromUser = Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])->get();
-                if (count($likeFromUser) !== 0) {
-                    $dislikeFromUser = Like::where('text_id', '=', $id)->where('user_id', '=', $input['userId'])
-                        ->delete();
-                    
-                    $article->number_of_likes = $article->number_of_likes ? $article->number_of_likes - 1 : 0;
-                }
-            }
-
-            $dislike = new DisLike;
-
-            $dislike->user_id = $input['userId'];
+            $dislike->user_id = $input->userId;
             $dislike->text_id = $id;
             $dislike->save();
-
-            $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes + 1 : 1;
-            $article->save();
         } else {
             return "{'satus':'Unknown action'}";
-        } 
-
-        if ($request['test']) {
-            return;
         }
         
         $article = Articles::find($id);
+        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
 
-        $article = $this->filterArticleForResponse($article);
+        $article['coments'] = $this->fiterComentsForResponse($coments);
+        $article['likes'] =  $this->fiterLikesForResponse($likes);
+        $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
 
         Log::info('GET ARTICLE: | '.$id .' |  AFTER USER ACTION : | '.strtoupper($request['action']) .' |');
 
@@ -467,16 +376,9 @@ class ArticlesController extends Controller
         $article = Articles::find($id);
 
         $category = $article->category;
-        $tags = explode('|', $article->tags);
+        $tags = $article->tags;
 
-        $response = [
-            'category' => $category,
-            'tags' => $tags
-        ];
-
-        Log::info('GET ARTICLE CATEGORY AND TAGS : | '.$id .' |');
-
-        return Response::json((object)$response, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
+        return "{'category:'".$category.",tags:".$tags."}";
     }
 
     public function createUrlSlugs()
@@ -489,9 +391,6 @@ class ArticlesController extends Controller
             $article->article_title_url_slug = $this->createTitleUrlSlug($article->title);
             $article->save();
         }
-
-        Log::info('CREATED URL SLUGS FOR ALL ARTICLES');
-
     }
 
     private function createTitleUrlSlug($title)
@@ -528,7 +427,7 @@ class ArticlesController extends Controller
         }
 
 
-        Log::info('CATEGORIES COUNTER REQUESTED FOR DATE: | '. $timestring .' |');
+        Log::info('CATEGORIES COUNTER REQUESTED FOR DATE: | '. $timestring .' | '. $timestamp .' | ');
         return json_encode((object)$responseOject);
     }
 }
