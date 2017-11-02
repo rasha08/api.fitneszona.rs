@@ -10,6 +10,8 @@ use App\Comment;
 use App\Like;
 use App\DisLike;
 use App\WebsiteUsers;
+use App\Http\Controllers\WebsiteConfigurationController;
+
 use Log;
 
 class ArticlesController extends Controller
@@ -107,11 +109,12 @@ class ArticlesController extends Controller
     public function store(StoreArticleRequest $request)
     {
         $article = new Articles;
-
+        
         $article->title = $request->input('title');
         $article->description = $request->input('description');
         $article->text = $request->input('text');
         $article->image_url = $request->input('image_url');
+        $article->thumb_image_url = $request->input('thumb_image_url');        
         $article->tags = $request->input('tags');
         $article->category = $request->input('category');
         $article->article_title_url_slug = $this->createTitleUrlSlug($request->input('title'));
@@ -127,6 +130,7 @@ class ArticlesController extends Controller
             'success' => 'create'
         ];
         Log::info('ADDED ARTICLE: | '. $article->id .' | ');
+        WebsiteConfigurationController::refreshTagsPriorityList(1);
 
         return view('articles.articles')->with('data', $data);
     }
@@ -175,10 +179,11 @@ class ArticlesController extends Controller
     {
        $article = Articles::find($id);
 
-       $article->title = $request->input('title') ? $request->input('title') : $article->title;
-       $article->description = $request->input('description') ? $request->input('description') : $article->description;
+        $article->title = $request->input('title') ? $request->input('title') : $article->title;
+        $article->description = $request->input('description') ? $request->input('description') : $article->description;
         $article->text = $request->input('text') ? $request->input('text') : $article->text;
         $article->image_url = $request->input('image_url') ? $request->input('image_url') : $articles->image_url;
+        $article->thumb_image_url = $request->input('thumb_image_url') ? $request->input('thumb_image_url') : $articles->thumb_image_url;
         $article->tags = $request->input('tags') ? $request->input('tags') : $article->tags;;
         $article->category = $request->input('category') ? $request->input('category') : $article->category;;
         $article->article_title_url_slug = $request->input('title') ?
@@ -194,7 +199,8 @@ class ArticlesController extends Controller
             'success' => 'update'
         ];
         Log::info('UPDATED ARTICLE: | '. $id .' | ');
-
+        WebsiteConfigurationController::refreshTagsPriorityList(1);
+        
         return redirect('/articles')->with('data', $data);
     }
 
@@ -213,7 +219,8 @@ class ArticlesController extends Controller
             'success' => 'delete'
         ];
         Log::info('DELETED ARTICLE: | '. $id .' | ');
-
+        WebsiteConfigurationController::refreshTagsPriorityList(1);
+        
         return redirect('/articles')->with('data', $data);
 
     }

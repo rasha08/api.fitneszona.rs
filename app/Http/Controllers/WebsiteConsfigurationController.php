@@ -207,4 +207,20 @@ class WebsiteConsfigurationController extends Controller
 
         return Response::json((object)['tagsPriorityList' => $tagsPriorityList], 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
+
+    static public function refreshTagsPriorityList($id) {
+        $configuration = WebsiteConsfiguration::find($id);
+        $sortedValidTags = ArticlesController::getValidArticleTags();
+        $tagsPriorityList = '';
+
+        foreach ($sortedValidTags as $tag) {
+            $tagsPriorityList .= $tag['name'].'|';
+        }
+
+        $tagsPriorityList = substr($tagsPriorityList, 0, -1);
+        $configuration['tags_priority_list'] = $tagsPriorityList;
+
+        Log::info('REFRESHING TAGS PRIORITY LIST FOR WEBSITE | '.$id.' |');
+        $configuration->save();
+    }
 }

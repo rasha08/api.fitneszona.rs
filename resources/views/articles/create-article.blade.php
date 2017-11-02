@@ -55,6 +55,17 @@
                                    @endif
                                </div>
                            </div>
+                           <div class="form-group{{ $errors->has('thumb_image_url') ? ' has-error' : '' }}">
+                               <label for="thumb_image_url" class="col-md-5 control-label">Url adresa male slike:</label>
+                               <div class="col-md-7">
+                                   <input id="thumb_image_url" type="text" class="form-control" name="thumb_image_url" value="{{ old('thumb_image_url') }}">
+                                   @if ($errors->has('thumb_image_url'))
+                                       <span class="help-block">
+                                           <strong>{{ $errors->first('thumb_image_url') }}</strong>
+                                       </span>
+                                   @endif
+                               </div>
+                           </div>
                            <div class="form-group{{ $errors->has('tags') ? ' has-error' : '' }}">
                                <label for="tags" class="col-md-5 control-label">Tagovi (tagovi se dodaju sintaksom tag1|tag2|tag3</label>
                                <div class="col-md-7">
