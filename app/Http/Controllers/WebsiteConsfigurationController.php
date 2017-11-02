@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\WebsiteConsfiguration;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ArticlesController;
+use Illuminate\Support\Facades\Response;
+
 use Log;
 
 class WebsiteConsfigurationController extends Controller
-{   
+{
     public $validHomePageChoices = [
         'articles',
         'latest_articles',
@@ -53,7 +56,7 @@ class WebsiteConsfigurationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
+    {
         return '{"status":"Route is not available"}';
     }
 
@@ -109,12 +112,12 @@ class WebsiteConsfigurationController extends Controller
         $configuration->is_landing_page_enabled = $request->input('is_landing_page_enabled') ? true : false;
         $configuration->is_chat_bot_enabled = $request->input('is_chat_bot_enabled') ? true : false;
         $configuration->is_google_map_enabled = $request->input('is_google_map_enabled') ? true : false;
-        $configuration->banner_text = $request->input('banner_text') ? 
+        $configuration->banner_text = $request->input('banner_text') ?
             $request->input('banner_text') : $configuration->banner_text;
-        $configuration->about_us = $request->input('about_us') ? 
+        $configuration->about_us = $request->input('about_us') ?
             $request->input('about_us') : $configuration->about_us;
         $configuration->is_fitness_creator_enabled = $request->input('is_fitness_creator_enabled') ? true : false;
-        $configuration->text_for_email_response = $request->input('text_for_email_response') ? 
+        $configuration->text_for_email_response = $request->input('text_for_email_response') ?
             $request->input('text_for_email_response') : $configuration->text_for_email_response;
 
         $activeCategories = '';
@@ -127,15 +130,15 @@ class WebsiteConsfigurationController extends Controller
         $activeCategories = substr($activeCategories, 0, -1);
         $configuration->active_categories = $activeCategories;
 
+        $sortedValidTags = ArticlesController::getValidArticleTags();
         $tagsPriorityList = '';
-        foreach ($this->validHomePageChoices as $tag) {
-            if ($request->input($tag)) {
-                $tagsPriorityList .= $category.'|';
-            }
+
+        foreach ($sortedValidTags as $tag) {
+            $tagsPriorityList .= $tag['name'].'|';
         }
 
         $tagsPriorityList = substr($tagsPriorityList, 0, -1);
-        $configuration->tags_priority_list = $tagsPriorityList;
+        $configuration['tags_priority_list'] = $tagsPriorityList;
 
 
         $configuration->save();
@@ -166,11 +169,13 @@ class WebsiteConsfigurationController extends Controller
         $configuration = WebsiteConsfiguration::find($id);
 
         $configuration->active_categories = explode('|', $configuration->active_categories);
+        $configuration->tags_priority_list = explode('|', $configuration->tags_priority_list);
+
         return $configuration;
     }
 
     public function getActiveCategories($id)
-    {   
+    {
 
         try {
             $configuration = WebsiteConsfiguration::find($id);
@@ -187,7 +192,7 @@ class WebsiteConsfigurationController extends Controller
     }
 
     public function getTagsPriority($id)
-    {   
+    {
 
         try {
             $configuration = WebsiteConsfiguration::find($id);
@@ -200,6 +205,6 @@ class WebsiteConsfigurationController extends Controller
 
         Log::info('TAGS PRIORITY LIST FETCHED FOR WEBSITE | '.$id.' |');
 
-        return json_encode((object)['tagsPriorityList' => $tagsPriorityList]);
+        return Response::json((object)['tagsPriorityList' => $tagsPriorityList], 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 }

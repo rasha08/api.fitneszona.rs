@@ -13,7 +13,7 @@ use App\WebsiteUsers;
 use Log;
 
 class ArticlesController extends Controller
-{   
+{
     static public $validCategories = [
         'trening',
         'ishrana',
@@ -92,9 +92,9 @@ class ArticlesController extends Controller
     public function create()
     {
         $data = [
-            'categories' => $this->validCategories, 
+            'categories' => $this->validCategories,
             'succes' => false];
-        
+
         return view('articles.create-article')->with('data', $data);
     }
 
@@ -105,7 +105,7 @@ class ArticlesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(StoreArticleRequest $request)
-    {   
+    {
         $article = new Articles;
 
         $article->title = $request->input('title');
@@ -117,11 +117,11 @@ class ArticlesController extends Controller
         $article->article_title_url_slug = $this->createTitleUrlSlug($request->input('title'));
         $article->seen_times = 0;
         $article->save();
-      
+
         $articles = Articles::where('id', '>', 0)
             ->orderBy('updated_at', 'desc')
             ->simplePaginate(10);
-        
+
         $data = [
             'articles' => $articles,
             'success' => 'create'
@@ -181,20 +181,20 @@ class ArticlesController extends Controller
         $article->image_url = $request->input('image_url') ? $request->input('image_url') : $articles->image_url;
         $article->tags = $request->input('tags') ? $request->input('tags') : $article->tags;;
         $article->category = $request->input('category') ? $request->input('category') : $article->category;;
-        $article->article_title_url_slug = $request->input('title') ? 
+        $article->article_title_url_slug = $request->input('title') ?
             $this->createTitleUrlSlug($request->input('title')) : $this->createTitleUrlSlug($request->$article->title);
         $article->save();
 
        $articles = Articles::where('id', '>', 0)
             ->orderBy('updated_at', 'desc')
             ->simplePaginate(10);
-        
+
         $data = [
             'articles' => $articles,
             'success' => 'update'
         ];
         Log::info('UPDATED ARTICLE: | '. $id .' | ');
-        
+
         return redirect('/articles')->with('data', $data);
     }
 
@@ -243,7 +243,7 @@ class ArticlesController extends Controller
             ->get();;
 
         $articles = $this->filterForResponse($articles);
-        
+
         Log::info('GET TOP ARTICLES');
 
         return Response::json($articles, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
@@ -272,7 +272,7 @@ class ArticlesController extends Controller
     public function category($category)
     {
         $articles = Articles::where('category', $category)->get();
-        
+
         $articles = $this->filterForResponse($articles);
 
         Log::info('GET ALL ARTICLES FROM CATEGORY : | '.strtoupper($category) .' |');
@@ -306,7 +306,7 @@ class ArticlesController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
-            
+
         $articles = $this->filterForResponse($articles);
 
         Log::info('GET LATEST ARTICLES FROM CATEGORY : | '.strtoupper($category) .' |');
@@ -356,7 +356,7 @@ class ArticlesController extends Controller
         } else {
             return "{'satus':'Unknown action'}";
         }
-        
+
         $article = Articles::find($id);
         $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
         $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
@@ -429,5 +429,35 @@ class ArticlesController extends Controller
 
         Log::info('CATEGORIES COUNTER REQUESTED FOR DATE: | '. $timestring .' | '. $timestamp .' | ');
         return json_encode((object)$responseOject);
+    }
+
+    static public function getValidArticleTags() {
+        $articles = Articles::all();
+        $tagsArray = [];
+        $result = [];
+
+        foreach ($articles as $article) {
+            $tagsArray = explode('|', $article->tags);
+
+            foreach ($tagsArray as $tag) {
+                if (array_key_exists($tag, $result)) {
+                    $result[$tag]['count'] += 1;
+                } else {
+                    $result[$tag] = [
+                        'name' => $tag,
+                        'count' => 0
+                    ];
+                }
+            }
+        }
+
+        usort($result, function ($a, $b) {
+            if ($a["count"] == $b["count"]) {
+                return 0;
+            }
+            return ($a["count"] < $b["count"]) ? 1 : -1;
+        });
+
+        return array_slice($result, 0, 20);
     }
 }

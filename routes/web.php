@@ -56,6 +56,7 @@ Route::group(['middleware' => ['api', 'auth']], function () {
 });
 Route::get('api/configuration/{id}', 'WebsiteConsfigurationController@getConfiguration')->middleware(['api', 'throttle:500,1']);
 Route::get('api/configuration/{id}/categories', 'WebsiteConsfigurationController@getActiveCategories')->middleware(['api', 'throttle:500,1']);
+Route::get('api/configuration/{id}/tags-priority-list', 'WebsiteConsfigurationController@getTagsPriority')->middleware(['api', 'throttle:500,1']);
 
 Route::post('test', 'TestController@action')->middleware(['auth','api']);
 Route::get('test', 'TestController@index')->middleware(['auth','api']);
