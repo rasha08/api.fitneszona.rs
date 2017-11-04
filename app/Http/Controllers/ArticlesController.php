@@ -10,7 +10,7 @@ use App\Comment;
 use App\Like;
 use App\DisLike;
 use App\WebsiteUsers;
-use App\Http\Controllers\WebsiteConfigurationController;
+use App\Http\Controllers\WebsiteConsfigurationController;
 
 use Log;
 
@@ -94,7 +94,7 @@ class ArticlesController extends Controller
     public function create()
     {
         $data = [
-            'categories' => $this->validCategories,
+            'categories' => self::$validCategories,
             'succes' => false];
 
         return view('articles.create-article')->with('data', $data);
@@ -130,7 +130,7 @@ class ArticlesController extends Controller
             'success' => 'create'
         ];
         Log::info('ADDED ARTICLE: | '. $article->id .' | ');
-        WebsiteConfigurationController::refreshTagsPriorityList(1);
+        WebsiteConsfigurationController::refreshTagsPriorityList(1);
 
         return view('articles.articles')->with('data', $data);
     }
@@ -161,7 +161,7 @@ class ArticlesController extends Controller
     {
         $article = Articles::find($id);
         $data = [
-            'categories' => $this->validCategories,
+            'categories' => self::$validCategories,
             'article' => $article
         ];
 
@@ -199,7 +199,7 @@ class ArticlesController extends Controller
             'success' => 'update'
         ];
         Log::info('UPDATED ARTICLE: | '. $id .' | ');
-        WebsiteConfigurationController::refreshTagsPriorityList(1);
+        WebsiteConsfigurationController::refreshTagsPriorityList(1);
         
         return redirect('/articles')->with('data', $data);
     }
@@ -219,7 +219,7 @@ class ArticlesController extends Controller
             'success' => 'delete'
         ];
         Log::info('DELETED ARTICLE: | '. $id .' | ');
-        WebsiteConfigurationController::refreshTagsPriorityList(1);
+        WebsiteConsfigurationController::refreshTagsPriorityList(1);
         
         return redirect('/articles')->with('data', $data);
 
@@ -426,7 +426,7 @@ class ArticlesController extends Controller
         $timestring = $request->timestring;
         $timestamp = date($timestring);
 
-        foreach ($this->validCategories as $category) {
+        foreach (self::$validCategories as $category) {
             $articles = Articles::where('category', $category)
                 ->where('updated_at','>=', $timestamp)
                 ->get();

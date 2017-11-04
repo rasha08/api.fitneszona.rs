@@ -80,6 +80,7 @@ class WebsiteUsersController extends Controller
         $user->visited_categories = explode('|', $user->visited_categories);
         $user->visited_tags = array_unique(explode('|', $user->visited_tags));
         $user->liked_categories = explode('|', $user->liked_categories);
+        $user->favorite_tags = explode('|', $user->favorite_tags);
         $user->liked_tags = array_unique(explode('|', $user->liked_tags));
         $user->visited_text_id = array_unique(explode('|', $user->visited_text_id));
 
@@ -149,29 +150,55 @@ class WebsiteUsersController extends Controller
             } else if (strrpos($user->liked_tags, $tag) === false) {
                 $user->liked_tags = $user->liked_tags.'|'.$tag;
             } 
-        } else if ($request['action'] === 'addTextToVisited') {
-            $article->seen_times = $article->seen_times + 1;
-            $article->save();
+        } else if ($request['action'] === 'leftSidebarChange') {
+            if (!$user->favorite_tags) {
+                return '{"status":"left sidebar options have not been initialized."}';
+            } else if(!$request['optionName'] || !$request['optionIndex']) {
+                return '{"status":"invalid action parametars."}';                
+            } else if($request['optionIndex'] > 5) {
+                return '{"status":"option index must be less than 5"}';                
+            }
 
-            if (!$user->visited_text_id) { 
-                $user->visited_text_id = $article->id;
-            } else if (strrpos($user->visited_text_id, (string)$article->id) === false) {
-                $user->visited_text_id = $user->visited_text_id.'|'.$article->id;
+            $tag = $request['optionName'];
+            $tagIndex = $request['optionIndex'];
 
-                if (!$user->visited_categories) {
-                    $user->visited_categories = $article->category;
-                } else if (strrpos($user->visited_categories, $article->category) == false) {
-                    $user->visited_categories = $user->visited_categories.'|'.$article->category;
-                }
-                $tags = explode('|', $article->tags);
-                foreach ($tags as $tag) {
-                   if (!$user->visited_tags) {
-                    $user->visited_tags = $tag;
-                    } else if (strrpos($user->visited_tags, $tag) == false) {
-                        $user->visited_tags = $user->visited_tags.'|'.$tag;
-                    } 
-                }
-            } 
+            $favoriteTags = explode('|', $user->favorite_tags);
+            $favoriteTags[$tagIndex] = $tag;
+
+            $user->favorite_tags = implode('|', $favoriteTags);
+        } else if ($request['action'] === 'leftSidebarInitialization') {
+            if ($user->favorite_tags) {
+                return '{"status":"left sidebar options have already been initialized."}';
+            } else if(!$request['options']) {
+                return '{"status":"invalid action parametars"}';                
+            }
+
+            $tags = $request['options'];
+
+            if (count($tags) !== 6) {
+                return '{"status":"it must be 6 options for favorite tags initialization."}';                                
+            }
+            
+            $favoriteTags = implode('|', $tags);
+            
+            $user->favorite_tags = $favoriteTags;
+        } else if (strrpos($user->visited_text_id, (string)$article->id) === false) {
+            $user->visited_text_id = $user->visited_text_id.'|'.$article->id;
+
+            if (!$user->visited_categories) {
+                $user->visited_categories = $article->category;
+            } else if (strrpos($user->visited_categories, $article->category) == false) {
+                $user->visited_categories = $user->visited_categories.'|'.$article->category;
+            }
+
+            $tags = explode('|', $article->tags);
+            foreach ($tags as $tag) {
+                if (!$user->visited_tags) {
+                $user->visited_tags = $tag;
+                } else if (strrpos($user->visited_tags, $tag) == false) {
+                    $user->visited_tags = $user->visited_tags.'|'.$tag;
+                } 
+            }
         } else {
             return '"status": "unknown action"';
         }
@@ -181,7 +208,7 @@ class WebsiteUsersController extends Controller
 
         $user->save();
 
-        return '{"status":"success"}';
+        return '{"status":"action success"}';
     }
 
     public function login(Request $request)
