@@ -3,9 +3,30 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading">Kategorije
+            </div>
+
+          @foreach($data['categories'] as $category)
+          <li class="list-group-item row col-md-11 col-xs-offset-1">
+            <a class="col-md-8" href={{ url('articles/category/'.$category) }}>
+              <h4>{{ $category }}</h4>
+            </a>
+          </li>
+          @endforeach
+        </div>
+        </div>
+        <div class="col-md-8">
             <div class="panel panel-default">
-                <div class="panel-heading">Tekstovi </div>
+                <div class="panel-heading">Tekstovi
+                  <br>
+                  <form class="form-inline col-md-10 col-md-offset-1" >
+                  <input class="form-control col-md-10" style="width: 80%;" type="text" placeholder="Jos uvek nije implementirano" aria-label="Search">
+                      <button class="btn btn-success col-md-2" type="submit">pretrazi</button>
+                </form>
+                <br><br>
+                </div>
                  @if (@$data['success'] === 'create')
                     <h2 class="alert alert-success">
                         <strong>Uspesno ste dodali tekst!</strong>
@@ -34,7 +55,7 @@
                         <h4 class="col-md-8">NAPRAVI TEKST</h4>
                         <a class="btn btn-info col-md-4" href="/articles/create" role="button">KREIRAJ</a>
                     </li>
-                    
+
                     @if (@$data)
                       @foreach(@$data['articles'] as $article)
                             <li class="list-group-item row col-md-11 col-md-offset-1">
@@ -53,7 +74,7 @@
                       @endforeach
                       {{ @$data['articles']->links() }}
                     @endif
-                    
+
                 </div>
             </div>
         </div>

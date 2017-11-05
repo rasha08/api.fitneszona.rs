@@ -10,7 +10,9 @@ use App\Comment;
 use App\Like;
 use App\DisLike;
 use App\WebsiteUsers;
+use App\ArticlesShortMarket;
 use App\Http\Controllers\WebsiteConsfigurationController;
+use App\Http\Controllers\ArticlesShortMarketController;
 
 use Log;
 
@@ -32,10 +34,7 @@ class ArticlesController extends Controller
     protected function filterForResponse($articles = [])
     {
         foreach ($articles as $article) {
-            $article->text = NULL;
-            $article->likes_id = NULL;
-            $article->dislikes_id = NULL;
-            $article->comments_id = NULL;
+           $article = $this->filterForArticleShortMarketResponse($article);
         }
 
         return $articles;
@@ -70,18 +69,36 @@ class ArticlesController extends Controller
 
         return $dislikes;
     }
+
+    private function filterForArticleShortMarketResponse($article) {
+        unset($article->text);
+        unset($article->likes_id);
+        unset($article->dislikes_id);
+        unset($article->comments_id);
+        $article->tags = explode('|', $article->tags);
+        $article['subscriptionId'] = ArticlesShortMarketController::getSubscriptionId($article->id);
+
+        return $article;
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($category = NULL)
     {
-        $articles = Articles::where('id', '>', 0)
-            ->orderBy('created_at', 'desc')
-            ->simplePaginate(10);
+        if (!$category) {
+            $articles = Articles::where('id', '>', 0)
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+        } else {
+            $articles = Articles::where('category', $category)
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+        }
 
-        $data = ['articles' => $articles];
+
+        $data = ['articles' => $articles, 'categories' => self::$validCategories];
 
         return view('articles.articles')->with('data', $data);
     }
@@ -109,30 +126,27 @@ class ArticlesController extends Controller
     public function store(StoreArticleRequest $request)
     {
         $article = new Articles;
-        
+
         $article->title = $request->input('title');
         $article->description = $request->input('description');
         $article->text = $request->input('text');
         $article->image_url = $request->input('image_url');
-        $article->thumb_image_url = $request->input('thumb_image_url');        
+        $article->thumb_image_url = $request->input('thumb_image_url');
         $article->tags = $request->input('tags');
         $article->category = $request->input('category');
         $article->article_title_url_slug = $this->createTitleUrlSlug($request->input('title'));
         $article->seen_times = 0;
         $article->save();
 
-        $articles = Articles::where('id', '>', 0)
-            ->orderBy('updated_at', 'desc')
-            ->simplePaginate(10);
+        ArticlesShortMarketController::store($article->id);
 
         $data = [
-            'articles' => $articles,
             'success' => 'create'
         ];
         Log::info('ADDED ARTICLE: | '. $article->id .' | ');
         WebsiteConsfigurationController::refreshTagsPriorityList(1);
 
-        return view('articles.articles')->with('data', $data);
+        return redirect()->route('articles.index')->with('data', $data);
     }
 
     /**
@@ -183,25 +197,22 @@ class ArticlesController extends Controller
         $article->description = $request->input('description') ? $request->input('description') : $article->description;
         $article->text = $request->input('text') ? $request->input('text') : $article->text;
         $article->image_url = $request->input('image_url') ? $request->input('image_url') : $articles->image_url;
-        $article->thumb_image_url = $request->input('thumb_image_url') ? $request->input('thumb_image_url') : $articles->thumb_image_url;
+        $article->thumb_image_url = $request->input('thumb_image_url') ? $request->input('thumb_image_url') : $article->thumb_image_url;
         $article->tags = $request->input('tags') ? $request->input('tags') : $article->tags;;
         $article->category = $request->input('category') ? $request->input('category') : $article->category;;
         $article->article_title_url_slug = $request->input('title') ?
             $this->createTitleUrlSlug($request->input('title')) : $this->createTitleUrlSlug($request->$article->title);
         $article->save();
 
-       $articles = Articles::where('id', '>', 0)
-            ->orderBy('updated_at', 'desc')
-            ->simplePaginate(10);
+        ArticlesShortMarketController::update($id);
 
         $data = [
-            'articles' => $articles,
             'success' => 'update'
         ];
         Log::info('UPDATED ARTICLE: | '. $id .' | ');
         WebsiteConsfigurationController::refreshTagsPriorityList(1);
-        
-        return redirect('/articles')->with('data', $data);
+
+        return redirect()->route('articles.index')->with('data', $data);
     }
 
     /**
@@ -218,10 +229,13 @@ class ArticlesController extends Controller
             'articles' => $articles,
             'success' => 'delete'
         ];
+
+        ArticlesShortMarketController::destroy($id);
+
         Log::info('DELETED ARTICLE: | '. $id .' | ');
         WebsiteConsfigurationController::refreshTagsPriorityList(1);
-        
-        return redirect('/articles')->with('data', $data);
+
+        return redirect()->route('articles.index')->with('data', $data);
 
     }
 
@@ -331,51 +345,96 @@ class ArticlesController extends Controller
         $article['coments'] = $this->fiterComentsForResponse($coments);
         $article['likes'] =  $this->fiterLikesForResponse($likes);
         $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
+        $article['subscriptionId'] = ArticlesShortMarketController::getSubscriptionId($id);
 
         Log::info('GET ARTICLE  : | '.$id .' |');
 
         return Response::json($article, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
-    public function action(Request $request, $id)
+    public function getArticleShortMArket($id)
     {
-        $input = $request->only(['action', 'userId']);
-        if ($input['action'] === 'comment') {
+        $article = Articles::find($id);
+
+        if(!$article) {
+            return "{'status:'atricle does not exist'}";
+        }
+
+        $article= $this->filterForArticleShortMarketResponse($article);
+
+
+        return Response::json($article, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
+    }
+
+    static public function action(Request $request, $id)
+    {
+        $article = Articles::find($id);
+        if ($request['action'] === 'comment') {
             $comment = new Comment;
 
-            $comment->user_id = $input->userId;
-            $comment->comment = $input->comment;
+            $comment->user_id = $request['userId'];
+            $comment->comment = $request['comment'];
             $comment->text_id = $id;
             $comment->save();
 
-        } else if ($input['action'] === 'like') {
-            $like = new Like;
 
-            $like->user_id = $input->userId;
-            $like->text_id = $id;
-            $like->save();
+            $article->number_of_comments = $article->number_of_comments ? $article->number_of_comments + 1 : 1;
+            $article->save();
+        } else if ($request['action'] === 'like') {
+            $oldLike = Like::where('user_id', $request['userId'])->where('text_id', $id)->first();
+
+            if ($oldLike) {
+                Like::destroy($oldLike->id);
+                $article->number_of_likes = $article->number_of_likes ? $article->number_of_likes - 1 : 0;
+            } else {
+                $like = new Like;
+
+                $like->user_id = $request['userId'];
+                $like->text_id = $id;
+                $like->save();
+
+                $article->number_of_likes = $article->number_of_likes ? $article->number_of_likes + 1 : 1;
+
+                $oldDisLike = DisLike::where('user_id', $request['userId'])->where('text_id', $id)->first();
+
+                if ($oldDisLike) {
+                    DisLike::destroy($oldDisLike->id);
+                    $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes - 1 : 0;
+                }
+            }
+            $article->save();
         } else if ($request['action'] === 'dislike') {
-            $dislike = new DisLikeLike;
+            $oldDisLike = DisLike::where('user_id', $request['userId'])->where('text_id', $id)->first();
 
-            $dislike->user_id = $input->userId;
-            $dislike->text_id = $id;
-            $dislike->save();
+            if ($oldDisLike) {
+                DisLike::destroy($oldDisLike->id);
+                $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes - 1 : 0;
+            } else {
+                $dislike = new DisLike;
+
+                $dislike->user_id = $request['userId'];
+                $dislike->text_id = $id;
+                $dislike->save();
+
+                $article->number_of_dislikes = $article->number_of_dislikes ? $article->number_of_dislikes + 1 : 1;
+
+                $oldLike = Like::where('user_id', $request['userId'])->where('text_id', $id)->first();
+
+                if ($oldLike) {
+                    Like::destroy($oldLike->id);
+                    $article->number_of_likes = $article->number_of_likes ? $article->number_of_likes - 1 : 0;
+                }
+            }
+            $article->save();
         } else {
             return "{'satus':'Unknown action'}";
         }
 
-        $article = Articles::find($id);
-        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        ArticlesShortMarketController::update($id);
 
-        $article['coments'] = $this->fiterComentsForResponse($coments);
-        $article['likes'] =  $this->fiterLikesForResponse($likes);
-        $article['dislikes'] = $this->fiterDislikesForResponse($dislikes);
+        Log::info('ON ARTICLE: | '.$id .' |  IS PREFORMED ACTION : | '.strtoupper($request['action']) .' |');
 
-        Log::info('GET ARTICLE: | '.$id .' |  AFTER USER ACTION : | '.strtoupper($request['action']) .' |');
-
-        return Response::json($article, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
+        return "{'satus':'action success'}";
     }
 
     public function getArticleCategoryAndTags($id)

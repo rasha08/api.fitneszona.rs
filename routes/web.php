@@ -23,6 +23,7 @@ Route::group(['middleware' => ['api', 'auth']], function () {
     Route::resource('articles', 'ArticlesController');
 });
 
+Route::get('articles/category/{category}', 'ArticlesController@index')->middleware(['auth']);
 Route::get('api/articles/all', 'ArticlesController@all')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/top', 'ArticlesController@top')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/latest', 'ArticlesController@latest')->middleware(['api', 'throttle:500,1']);
@@ -30,6 +31,9 @@ Route::get('api/articles/category/{category}', 'ArticlesController@category')->m
 Route::get('api/articles/category/{category}/top', 'ArticlesController@categoryTopArticles')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/category/{category}/latest', 'ArticlesController@categoryLatestArticles')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/{id}', 'ArticlesController@article')->middleware(['api', 'throttle:500,1']);
+
+Route::get('api/articles/short/{id}', 'ArticlesController@getArticleShortMArket')->middleware(['api', 'throttle:500,1']);
+
 Route::get('api/articles/{id}/catgory-and-tags', 'ArticlesController@getArticleCategoryAndTags')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/all/create-url-slugs', 'ArticlesController@createUrlSlugs')->middleware(['api', 'throttle:500,1']);
 Route::post('api/articles/all/counter', 'ArticlesController@counter')->middleware(['api', 'throttle:500,1']);

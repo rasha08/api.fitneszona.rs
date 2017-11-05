@@ -6,6 +6,9 @@ use App\WebsiteUsers;
 use App\Articles;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Controllers\ArticlesShortMarketController;
+use App\Http\Controllers\UserShortMarketController;
+
 use Log;
 
 class WebsiteUsersController extends Controller
@@ -40,7 +43,7 @@ class WebsiteUsersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(RegisterUserRequest $request)
-    {   
+    {
         $user = WebsiteUsers::where('email',  $request->email)->first();
 
         if ($user) {
@@ -57,6 +60,7 @@ class WebsiteUsersController extends Controller
         $user->save();
 
         Log::info('CREATED USER | '.$user->email.' | ');
+        UserShortMarketController::store($user->id);
 
         return '{"status":"registration success"}';
     }
@@ -76,13 +80,14 @@ class WebsiteUsersController extends Controller
         if (!$user) {
             return "{'status':'non existing user'}";
         }
-        
+
         $user->visited_categories = explode('|', $user->visited_categories);
-        $user->visited_tags = array_unique(explode('|', $user->visited_tags));
+        $user->visited_tags = explode('|', $user->visited_tags);
         $user->liked_categories = explode('|', $user->liked_categories);
         $user->favorite_tags = explode('|', $user->favorite_tags);
         $user->liked_tags = array_unique(explode('|', $user->liked_tags));
-        $user->visited_text_id = array_unique(explode('|', $user->visited_text_id));
+        $user->visited_text_id = explode('|', $user->visited_text_id);
+        $user['subscriptionId'] = UserShortMarketController::getSubscriptionId($id);
 
         return $user;
     }
@@ -114,7 +119,7 @@ class WebsiteUsersController extends Controller
 
         $user->save();
         Log::info('UPDATED USER | '.$id.' | ');
-
+        UserShortMarketController::update($id);
         return '{"status":"update data success"}';
     }
 
@@ -128,7 +133,7 @@ class WebsiteUsersController extends Controller
     {
         WebsiteUsers::destroy($id);
         Log::info('DELETED USER | '.$id.' | ');
-
+        UserShortMarketController::destroy($id);
         return '{"status":"success"}';
     }
 
@@ -142,21 +147,21 @@ class WebsiteUsersController extends Controller
                 $user->liked_categories = $article->category;
             } else if (strrpos($user->liked_categories, $article->category) === false) {
                 $user->liked_categories = $user->liked_categories.'|'.$article->category;
-            } 
+            }
         } else if ($request['action'] === 'addLikedTag') {
             $tag = $request['value'];
             if (!$user->liked_tags) {
                 $user->liked_tags = $tag;
             } else if (strrpos($user->liked_tags, $tag) === false) {
                 $user->liked_tags = $user->liked_tags.'|'.$tag;
-            } 
+            }
         } else if ($request['action'] === 'leftSidebarChange') {
             if (!$user->favorite_tags) {
                 return '{"status":"left sidebar options have not been initialized."}';
             } else if(!$request['optionName'] || !$request['optionIndex']) {
-                return '{"status":"invalid action parametars."}';                
+                return '{"status":"invalid action parametars."}';
             } else if($request['optionIndex'] > 5) {
-                return '{"status":"option index must be less than 5"}';                
+                return '{"status":"option index must be less than 5"}';
             }
 
             $tag = $request['optionName'];
@@ -170,20 +175,22 @@ class WebsiteUsersController extends Controller
             if ($user->favorite_tags) {
                 return '{"status":"left sidebar options have already been initialized."}';
             } else if(!$request['options']) {
-                return '{"status":"invalid action parametars"}';                
+                return '{"status":"invalid action parametars"}';
             }
 
             $tags = $request['options'];
 
             if (count($tags) !== 6) {
-                return '{"status":"it must be 6 options for favorite tags initialization."}';                                
+                return '{"status":"it must be 6 options for favorite tags initialization."}';
             }
-            
+
             $favoriteTags = implode('|', $tags);
-            
+
             $user->favorite_tags = $favoriteTags;
-        } else if (strrpos($user->visited_text_id, (string)$article->id) === false) {
-            $user->visited_text_id = $user->visited_text_id.'|'.$article->id;
+        } else if ($request['action'] === 'addTextToVisited') {
+            if (strrpos($user->visited_text_id, (string)$article->id) === false) {
+                $user->visited_text_id = $user->visited_text_id.'|'.$article->id;
+            }
 
             if (!$user->visited_categories) {
                 $user->visited_categories = $article->category;
@@ -197,8 +204,13 @@ class WebsiteUsersController extends Controller
                 $user->visited_tags = $tag;
                 } else if (strrpos($user->visited_tags, $tag) == false) {
                     $user->visited_tags = $user->visited_tags.'|'.$tag;
-                } 
+                }
             }
+            $article->seen_times = $article->seen_times + 1;
+            $article->save();
+            ArticlesShortMarketController::update($request['textId']);
+
+            $user->save();
         } else {
             return '"status": "unknown action"';
         }
@@ -207,12 +219,13 @@ class WebsiteUsersController extends Controller
 
 
         $user->save();
+        UserShortMarketController::update($id);
 
         return '{"status":"action success"}';
     }
 
     public function login(Request $request)
-    {   
+    {
         Log::info('USER LOGIN  | '. $request->email.' |');
         $user = WebsiteUsers::where('email', $request['email'])->first();
 
@@ -236,25 +249,25 @@ class WebsiteUsersController extends Controller
         }
 
         $newPassword = $this->generateRandomString(10);
-        
+
         $uppercase = preg_match('@[A-Z]@', $newPassword);
         $lowercase = preg_match('@[a-z]@', $newPassword);
         $number    = preg_match('@[0-9]@', $newPassword);
 
         while (!$uppercase || !$lowercase || !$number) {
             $newPassword = $this->generateRandomString(10);
-            
+
             $uppercase = preg_match('@[A-Z]@', $newPassword);
             $lowercase = preg_match('@[a-z]@', $newPassword);
             $number    = preg_match('@[0-9]@', $newPassword);
         }
-       
+
         $user->password = $newPassword;
         $user->save();
-   
+
         Log::info('RESET PASSWORD  | '.$request['email'].' |');
         $this->sendResetPasswordEmail($request['email'], $newPassword);
-        
+
         return '{"status":"new password"}';
     }
 
@@ -272,7 +285,7 @@ class WebsiteUsersController extends Controller
     {
         $to = $email;
         $subject = "Fitnes Zona - Resetovanje Lozinke";
-        
+
         $message = "
         <html>
         <head>
@@ -290,12 +303,12 @@ class WebsiteUsersController extends Controller
         </body>
         </html>
         ";
-        
+
         $headers = "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        
+
         $headers .= 'From: <fitneszona.mail@gmail.com>' . "\r\n";
-        
+
         mail($to,$subject,$message,$headers);
     }
 

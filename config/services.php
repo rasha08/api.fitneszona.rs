@@ -35,4 +35,12 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'firebase' => [
+        'api_key' => 'AIzaSyCtBnbBn7R98ry3qrKcoInQpxAYT7M-N7w', // Only used for JS integration
+        'auth_domain' => 'fitnes-zona-c423a.firebaseapp.com', // Only used for JS integration
+        'database_url' => 'https://fitnes-zona-c423a.firebaseio.com',
+        'secret' => '',
+        'storage_bucket' => 'fitnes-zona-c423a.appspot.com', // Only used for JS integration
+    ],
+
 ];

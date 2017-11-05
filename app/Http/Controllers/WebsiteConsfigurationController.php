@@ -6,6 +6,7 @@ use App\WebsiteConsfiguration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ArticlesController;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\ConfigurationShortMarketController;
 
 use Log;
 
@@ -153,6 +154,7 @@ class WebsiteConsfigurationController extends Controller
             'status' => 'success'
         ];
         Log::info('CONFIGURATION UPDATED FOR WEBSITE | '.$id.' |');
+        ConfigurationShortMarketController::update($id);
 
         return redirect('/configuration/'.$id.'/edit')->with('data', $data);
     }
@@ -170,6 +172,7 @@ class WebsiteConsfigurationController extends Controller
 
         $configuration->active_categories = explode('|', $configuration->active_categories);
         $configuration->tags_priority_list = explode('|', $configuration->tags_priority_list);
+        $configuration['subscriptionId'] = ConfigurationShortMarketController::getSubscriptionId($id);
 
         return $configuration;
     }
