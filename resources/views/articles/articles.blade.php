@@ -59,10 +59,10 @@
                     @if (@$data)
                       @foreach(@$data['articles'] as $article)
                             <li class="list-group-item row col-md-11 col-md-offset-1">
-                                <a class="col-md-8" href={{'articles/'.$article->id }}>
+                                <a class="col-md-8" href={{url('articles/'.$article->id)}}>
                                   <h4>{{ $article->id }} || {{ $article->title }}</h4>
                                 </a>
-                                <a class="btn btn-default col-md-2 col-sm-6" href={{'articles/'.$article->id.'/edit' }} role="button">IZMENI</a>
+                                <a class="btn btn-default col-md-2 col-sm-6" href={{ url('articles/'.$article->id.'/edit')}} role="button">IZMENI</a>
 
                                 <form method="POST" action="{{ url('/articles/'.$article->id) }}">
                                   <input name="_method" type="hidden" value="DELETE">
