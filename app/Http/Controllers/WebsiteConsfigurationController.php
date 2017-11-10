@@ -170,7 +170,7 @@ class WebsiteConsfigurationController extends Controller
         Log::info('GET CONFIGURATION FOR WEBSITE ID: | '.$id.' |');
         $configuration = WebsiteConsfiguration::find($id);
 
-        $configuration->active_categories = explode('|', $configuration->active_categories);
+        $configuration->active_categories = $this->getFullActiveCategoryObjects(explode('|', $configuration->active_categories));
         $configuration->tags_priority_list = explode('|', $configuration->tags_priority_list);
         $configuration['subscriptionId'] = ConfigurationShortMarketController::getSubscriptionId($id);
 
@@ -226,4 +226,50 @@ class WebsiteConsfigurationController extends Controller
         Log::info('REFRESHING TAGS PRIORITY LIST FOR WEBSITE | '.$id.' |');
         $configuration->save();
     }
+
+    private function getFullActiveCategoryObjects($categories)
+    {
+        $fullActiveCategoriesMarkets = [];
+        foreach ($categories as $category) {
+            $fullMarket = [];
+            switch ($category) {
+                case 'power_liftting':
+                    $fullMarket['name'] = 'Power Liftting';
+                    $fullMarket['urlSlug'] = 'power-lifting';
+                    $fullMarket['category'] = 'power';
+                    break;
+                case 'grupni_treninzi':
+                    $fullMarket['name'] = 'Grupni Treninzi';
+                    $fullMarket['urlSlug'] = 'grupni-treninzi';
+                    $fullMarket['category'] = 'grupni';
+                    break;
+                case 'articles':
+                    $fullMarket['name'] = 'Svi Tekstovi';
+                    $fullMarket['urlSlug'] = 'svi-tekstovi';
+                    $fullMarket['category'] = $category;
+                    break;
+                case 'latest_articles':
+                    $fullMarket['name'] = 'Najnoviji Tekstovi';
+                    $fullMarket['urlSlug'] = 'najnoviji-tekstovi';
+                    $fullMarket['category'] = $category;
+                    break;
+                case 'top_articles':
+                    $fullMarket['name'] = 'Najčitaniji Tekstovi';
+                    $fullMarket['urlSlug'] = 'najcitaniji-tekstovi';
+                    $fullMarket['category'] = $category;
+                    break;
+                default:
+                    $fullMarket['name'] = ucfirst($category);
+                    $fullMarket['urlSlug'] = $category;
+                    $fullMarket['category'] = $category;
+                    break;
+            }
+
+            array_push($fullActiveCategoriesMarkets, (object)$fullMarket);
+
+        }
+
+        return $fullActiveCategoriesMarkets;
+    }
+
 }

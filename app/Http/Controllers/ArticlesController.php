@@ -481,20 +481,23 @@ class ArticlesController extends Controller
 
     public function counter(Request $request)
     {
-        $responseOject = [];
+        $responseObjects = [];
         $timestring = $request->timestring;
         $timestamp = date($timestring);
 
         foreach (self::$validCategories as $category) {
+            $responseObject = [];
             $articles = Articles::where('category', $category)
                 ->where('updated_at','>=', $timestamp)
                 ->get();
-            $responseOject[$category] = count($articles);
+            $responseObject['categoryName'] = $category;
+            $responseObject['count'] = count($articles);
+            array_push($responseObjects, (object)$responseObject);
         }
 
 
         Log::info('CATEGORIES COUNTER REQUESTED FOR DATE: | '. $timestring .' | '. $timestamp .' | ');
-        return json_encode((object)$responseOject);
+        return json_encode($responseObjects);
     }
 
     static public function getValidArticleTags() {
@@ -525,5 +528,18 @@ class ArticlesController extends Controller
         });
 
         return array_slice($result, 0, 20);
+    }
+
+    public function search(Request $request)
+    {
+        $searchParam = $request->query('search');
+
+        $articles = Articles::where('title', 'like', '%'.$searchParam.'%')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $data = ['articles' => $articles, 'categories' => self::$validCategories];
+
+        return view('articles.articles')->with('data', $data);
     }
 }

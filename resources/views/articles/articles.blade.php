@@ -21,8 +21,8 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Tekstovi
                   <br>
-                  <form class="form-inline col-md-10 col-md-offset-1" >
-                  <input class="form-control col-md-10" style="width: 80%;" type="text" placeholder="Jos uvek nije implementirano" aria-label="Search">
+                  <form class="form-inline col-md-10 col-md-offset-1" method="get" action="{{url('articles/search/search-articles')}}">
+                  <input class="form-control col-md-10" name="search" style="width: 80%;" type="text" placeholder="Pretrazi bazu po imenu clanka..." aria-label="Search">
                       <button class="btn btn-success col-md-2" type="submit">pretrazi</button>
                 </form>
                 <br><br>

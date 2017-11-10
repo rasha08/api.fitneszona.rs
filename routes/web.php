@@ -22,7 +22,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::group(['middleware' => ['api', 'auth']], function () {
     Route::resource('articles', 'ArticlesController');
 });
-
+Route::get('articles/search/search-articles', 'ArticlesController@search')->middleware(['auth']);
 Route::get('articles/category/{category}', 'ArticlesController@index')->middleware(['auth']);
 Route::get('api/articles/all', 'ArticlesController@all')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/top', 'ArticlesController@top')->middleware(['api', 'throttle:500,1']);

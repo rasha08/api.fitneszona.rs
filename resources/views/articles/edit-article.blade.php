@@ -7,7 +7,7 @@
            <div class="col-md-10 col-md-offset-1">
                <div class="panel panel-default">
                    <div class="panel-heading well">Izmeni tekst</div>
-                  
+
                    <div class="panel-body">
                        <form class="form-horizontal" role="form" method="POST" action="{{ url('/articles/'.$data['article']->id) }}">
                         <input name="_method" type="hidden" value="PUT">
@@ -61,7 +61,7 @@
                            <div class="form-group{{ $errors->has('thumb_image_url') ? ' has-error' : '' }}">
                                <label for="thumb_image_url" class="col-md-5 control-label">Url adresa male slike:</label>
                                <div class="col-md-7">
-                                   <input id="thumb_image_url" type="text" class="form-control" name="thumb_image_url" value="{{ old('thumb_image_url') }}">
+                                   <input id="thumb_image_url" type="text" class="form-control" name="thumb_image_url" value="{{ $data['article']['thumb_image_url'] }}">
                                    @if ($errors->has('thumb_image_url'))
                                        <span class="help-block">
                                            <strong>{{ $errors->first('thumb_image_url') }}</strong>
