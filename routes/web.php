@@ -54,7 +54,7 @@ Route::post('api/users/action/{id}/', 'WebsiteUsersController@action')->middlewa
 Route::post('api/users/login', 'WebsiteUsersController@login')->middleware('api');
 Route::post('api/users/reset-password', 'WebsiteUsersController@resetPassword')->middleware('api');
 Route::post('api/users/{id}/{data}', 'WebsiteUsersController@getUserSpecificData')->middleware('api');
-
+Route::post('api/users/user-configuration/{userId}/update-or-create', 'UserConfigurationController@store')->middleware('api');
 
 Route::group(['middleware' => ['api', 'auth']], function () {
     Route::resource('configuration', 'WebsiteConsfigurationController');

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Controllers\ArticlesShortMarketController;
 use App\Http\Controllers\UserShortMarketController;
+use App\Http\Controllers\UserConfigurationController;
 
 use Log;
 
@@ -88,6 +89,9 @@ class WebsiteUsersController extends Controller
         $user->liked_tags = array_unique(explode('|', $user->liked_tags));
         $user->visited_text_id = explode('|', $user->visited_text_id);
         $user['subscriptionId'] = UserShortMarketController::getSubscriptionId($id);
+        $user['configuration'] = UserConfigurationController::show($id);
+        unset($user['created_at']);
+        unset($user['updated_at']);
 
         return $user;
     }
@@ -163,14 +167,14 @@ class WebsiteUsersController extends Controller
         } else if ($request['action'] === 'leftSidebarChange') {
             if (!$user->favorite_tags) {
                 return '{"status":"left sidebar options have not been initialized."}';
-            } else if(!$request['optionName'] || !$request['optionIndex']) {
+            } else if(!$request['optionName']) {
                 return '{"status":"invalid action parametars."}';
-            } else if($request['optionIndex'] > 5) {
-                return '{"status":"option index must be less than 5"}';
+            } else if($request['optionIndex'] > 5 || $request['optionIndex'] < 0) {
+                return '{"status":"option index must be positive number witchs value must be less than 5"}';
             }
 
             $tag = $request['optionName'];
-            $tagIndex = $request['optionIndex'];
+            $tagIndex = $request['optionIndex'] ?: 0;
 
             $favoriteTags = explode('|', $user->favorite_tags);
             $favoriteTags[$tagIndex] = $tag;
@@ -221,7 +225,7 @@ class WebsiteUsersController extends Controller
 
 
         $user->save();
-        UserShortMarketController::update($id);
+        UserShortMarketController::update($id, 'update');
 
         return '{"status":"action success"}';
     }

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\ConfigurationShortMarket;
 use Illuminate\Http\Request;
+use App\UserConfigurationShortMarket;
 
-class ConfigurationShortMarketController extends Controller
+
+class UserConfigurationShortMarketController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -35,19 +36,19 @@ class ConfigurationShortMarketController extends Controller
      */
     static public function store($id)
     {
-        $ConfigurationShortMarket = new ConfigurationShortMarket;
-        $ConfigurationShortMarket['configuration_id'] = $id;
-        $ConfigurationShortMarket['update'] = 'update';
-        $ConfigurationShortMarket->save();
+        $UserConfigurationShortMarket = new UserConfigurationShortMarket;
+        $UserConfigurationShortMarket['user_id'] = $id;
+        $UserConfigurationShortMarket['update'] = 'update';
+        $UserConfigurationShortMarket->save();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\ArticlesShortMarket  $articlesShortMarket
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(ConfigurationShortMarket $articlesShortMarket)
+    public function show($id)
     {
         //
     }
@@ -55,10 +56,10 @@ class ConfigurationShortMarketController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\ArticlesShortMarket  $articlesShortMarket
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(ConfigurationShortMarket $articlesShortMarket)
+    public function edit($id)
     {
         //
     }
@@ -67,28 +68,28 @@ class ConfigurationShortMarketController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\ArticlesShortMarket  $articlesShortMarket
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     static public function update($id)
     {
-        $ConfigurationShortMarket = ConfigurationShortMarket::where('configuration_id', $id)->first();
-        $ConfigurationShortMarket['update'] = self::generateRandomString();
-        $ConfigurationShortMarket->save();
+        $UserConfigurationShortMarket = UserConfigurationShortMarket::where('user_id', $id)->first();
+        $UserConfigurationShortMarket['update'] = self::generateRandomString();
+        $UserConfigurationShortMarket->save();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\ArticlesShortMarket  $articlesShortMarket
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     static public function destroy($id)
     {
-        ConfigurationShortMarket::where('configuration_id', $id)->delete();
+        UserConfigurationShortMarket::where('user_id', $id)->delete();
     }
 
-    static private function generateRandomString($length = 5) {
+    static private function generateRandomString($length = 2) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';
@@ -100,6 +101,6 @@ class ConfigurationShortMarketController extends Controller
 
     static public function getSubscriptionId($id)
     {
-        return ConfigurationShortMarket::where('configuration_id', $id)->value('id');
+        return UserConfigurationShortMarket::where('user_id', $id)->value('id');
     }
 }

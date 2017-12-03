@@ -73,7 +73,6 @@ class UserShortMarketController extends Controller
     static public function update($id)
     {
         $UserShortMarket = UserShortMarket::where('user_id', $id)->first();
-        $UserShortMarket['user_id'] = $id;
         $UserShortMarket['update'] = self::generateRandomString();
         $UserShortMarket->save();
     }

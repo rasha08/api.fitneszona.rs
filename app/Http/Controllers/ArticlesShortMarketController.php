@@ -73,7 +73,6 @@ class ArticlesShortMarketController extends Controller
     static public function update($id, $update)
     {
         $articleFB = ArticlesShortMarket::where('text_id', $id)->first();
-        $articleFB['text_id'] = $id;
         $articleFB['update'] = json_encode($update);
         $articleFB->save();
     }

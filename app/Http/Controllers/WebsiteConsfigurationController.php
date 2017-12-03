@@ -24,7 +24,7 @@ class WebsiteConsfigurationController extends Controller
         'crossfit',
         'trcanje',
         'mrsavljenje',
-        'power lifting'
+        'power_lifting'
     ];
 
     private $validThemes = ['light', 'dark', 'urban', 'roboto', 'art'];

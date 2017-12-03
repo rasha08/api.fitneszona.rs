@@ -388,7 +388,7 @@ class ArticlesController extends Controller
         $article = Articles::find($id);
 
         if(!$article) {
-            return "{'status:'atricle does not exist'}";
+            return "{'status':'atricle does not exist'}";
         }
 
         $article= self::filterForArticleShortMarketResponse($article);
