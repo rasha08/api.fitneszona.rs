@@ -12,7 +12,7 @@
                 @if(@$data['action'])
                 <h4 class="alert text-info">predhodna akcija <b>{{ $data['action'] }}</b> je izvrsena nad tekstom <b>ID: {{ $data['textId'] }}</b> korisnik <b>{{ $data['user'] }}</b></h4>
                 @endif
-                <form class="form" role="form" method="POST" action="{{ url('/test') }}">
+                <form class="form" role="form" method="POST" action="{{ url('/api/test-zona') }}">
                            {{ csrf_field() }}
                       <div class="form-group{{ $errors->has('test-user') ? ' has-error' : '' }}">
                            <label for="test-user" class="col-md-4 control-label">Izaberi Test Korisnika</label>

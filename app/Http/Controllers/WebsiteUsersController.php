@@ -154,6 +154,11 @@ class WebsiteUsersController extends Controller
                 $user->liked_tags = $tag;
             } else if (strrpos($user->liked_tags, $tag) === false) {
                 $user->liked_tags = $user->liked_tags.'|'.$tag;
+            } else {
+                $likedTags = explode('|', $user->liked_tags);
+                $index = array_search($tag, $likedTags);
+                unset($likedTags[$index]);
+                $user->liked_tags = implode('|', $likedTags);
             }
         } else if ($request['action'] === 'leftSidebarChange') {
             if (!$user->favorite_tags) {
@@ -206,9 +211,6 @@ class WebsiteUsersController extends Controller
                     $user->visited_tags = $user->visited_tags.'|'.$tag;
                 }
             }
-            $article->seen_times = $article->seen_times + 1;
-            $article->save();
-            ArticlesShortMarketController::update($request['textId']);
 
             $user->save();
         } else {
@@ -236,6 +238,14 @@ class WebsiteUsersController extends Controller
 
         Log::info('USER LOGIN  | '.$user->email.' |');
         if ($user->password === $request->password) {
+            $user->visited_categories = explode('|', $user->visited_categories);
+            $user->visited_tags = explode('|', $user->visited_tags);
+            $user->liked_categories = explode('|', $user->liked_categories);
+            $user->favorite_tags = explode('|', $user->favorite_tags);
+            $user->liked_tags = array_unique(explode('|', $user->liked_tags));
+            $user->visited_text_id = explode('|', $user->visited_text_id);
+            $user['subscriptionId'] = UserShortMarketController::getSubscriptionId($user->id);
+
             return $user;
         } else {
             return '{"status":"wrong password"}';

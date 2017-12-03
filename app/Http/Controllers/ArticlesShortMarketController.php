@@ -70,11 +70,11 @@ class ArticlesShortMarketController extends Controller
      * @param  \App\ArticlesShortMarket  $articlesShortMarket
      * @return \Illuminate\Http\Response
      */
-    static public function update($id)
+    static public function update($id, $update)
     {
         $articleFB = ArticlesShortMarket::where('text_id', $id)->first();
         $articleFB['text_id'] = $id;
-        $articleFB['update'] = self::generateRandomString();
+        $articleFB['update'] = json_encode($update);
         $articleFB->save();
     }
 

@@ -14,7 +14,7 @@ use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\WebsiteUsersController;
 
 class TestController extends Controller
-{   
+{
     public function index()
     {
         $testUsers = WebsiteUsers::where('email', 'like', '%@fitneszona.rs%')->get();
@@ -57,10 +57,8 @@ class TestController extends Controller
                 ArticlesController::action($request, $textId);
                 break;
             case 'setSeenTimes':
-                $seenTimes = $request->input('seen_times');
-                $article = Articles::find($textId);
-                $article->seen_times = $seenTimes;
-                $article->save();
+                $request['seen_times'] = $request->input('seen_times');
+                ArticlesController::action($request, $textId);
                 break;
             default:
                 break;

@@ -28,6 +28,7 @@ Route::get('api/articles/all', 'ArticlesController@all')->middleware(['api', 'th
 Route::get('api/articles/top', 'ArticlesController@top')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/latest', 'ArticlesController@latest')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/category/{category}', 'ArticlesController@category')->middleware(['api', 'throttle:500,1']);
+Route::get('api/articles/index', 'ArticlesController@getIndexPageArticles')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/category/{category}/top', 'ArticlesController@categoryTopArticles')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/category/{category}/latest', 'ArticlesController@categoryLatestArticles')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/{id}', 'ArticlesController@article')->middleware(['api', 'throttle:500,1']);
@@ -61,7 +62,7 @@ Route::group(['middleware' => ['api', 'auth']], function () {
 Route::get('api/configuration/{id}', 'WebsiteConsfigurationController@getConfiguration')->middleware(['api', 'throttle:500,1']);
 Route::get('api/configuration/{id}/categories', 'WebsiteConsfigurationController@getActiveCategories')->middleware(['api', 'throttle:500,1']);
 
-Route::post('test', 'TestController@action')->middleware(['auth','api']);
-Route::get('test', 'TestController@index')->middleware(['auth','api']);
+Route::post('api/test-zona', 'TestController@action')->middleware(['auth','api']);
+Route::get('api/test-zona', 'TestController@index')->middleware(['auth','api']);
 
 Route::get('api/search', 'SearchController@index')->middleware('api');
