@@ -26,7 +26,7 @@
                         </div>
                         <div class="row">
                             <div class="modal-body">
-                                <form class="form-horizontal" method="POST" action="{{ url('/notification/all') }}">
+                                <form class="form-horizontal" method="POST" action="{{ url('notification/all/users') }}">
                                     {{ csrf_field() }}
                                     <div class="form-group{{ $errors->has('title') ? ' has-error' : '' }}">
                                         <label for="title" class="col-md-1 control-label">Naslov</label>

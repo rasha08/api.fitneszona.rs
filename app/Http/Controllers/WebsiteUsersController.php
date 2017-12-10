@@ -9,6 +9,8 @@ use App\Http\Requests\RegisterUserRequest;
 use App\Http\Controllers\ArticlesShortMarketController;
 use App\Http\Controllers\UserShortMarketController;
 use App\Http\Controllers\UserConfigurationController;
+use App\Nortification;
+use Illuminate\Support\Facades\Response;
 
 use Log;
 
@@ -94,8 +96,13 @@ class WebsiteUsersController extends Controller
         $user['configuration'] = UserConfigurationController::show($id);
         unset($user['created_at']);
         unset($user['updated_at']);
+        $user['nptifications']  = Nortification::where('user_id', $user->id)
+                                                ->where('seen', '0')
+                                                ->select(['id', 'title', 'notification', 'seen', 'created_at'])
+                                                ->orderBy('created_at', 'desc')
+                                                ->get();
 
-        return $user;
+        return Response::json($user, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -244,15 +251,7 @@ class WebsiteUsersController extends Controller
 
         Log::info('USER LOGIN  | '.$user->email.' |');
         if ($user->password === $request->password) {
-            $user->visited_categories = explode('|', $user->visited_categories);
-            $user->visited_tags = explode('|', $user->visited_tags);
-            $user->liked_categories = explode('|', $user->liked_categories);
-            $user->favorite_tags = explode('|', $user->favorite_tags);
-            $user->liked_tags = array_unique(explode('|', $user->liked_tags));
-            $user->visited_text_id = explode('|', $user->visited_text_id);
-            $user['subscriptionId'] = UserShortMarketController::getSubscriptionId($user->id);
-
-            return $user;
+            return $this->show($user->id);
         } else {
             return '{"status":"wrong password"}';
         }

@@ -66,3 +66,8 @@ Route::post('api/test-zona', 'TestController@action')->middleware(['auth','api']
 Route::get('api/test-zona', 'TestController@index')->middleware(['auth','api']);
 
 Route::get('api/search', 'SearchController@index')->middleware('api');
+
+Route::post('notification/{id}', 'NortificationController@store')->middleware(['auth', 'api']);
+Route::post('notification/all/users', 'NortificationController@index')->middleware(['auth', 'api']);
+Route::get('api/notification/{id}/seen-notification', 'NortificationController@update')->middleware('api');
+Route::get('api/notification/{id}/get-all-notifications', 'NortificationController@getAllUserNotifications')->middleware('api');

@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Nortification;
+use App\WebsiteUsers;
 use Illuminate\Http\Request;
+use App\Http\Controllers\UserShortMarketController;
+use Illuminate\Support\Facades\Response;
+
+use Log;
 
 class NortificationController extends Controller
 {
@@ -12,9 +17,28 @@ class NortificationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $users = WebsiteUsers::all();
+        foreach ($users as $user) {
+            $notification = new Nortification;
+            $notification->user_id = $user->id;
+            $notification->notification =  $request->input('text');
+            $notification->title = $request->input('title');
+            $notification->seen = false;
+
+            $notification->save();
+
+            $update = [
+                'type' => 'notification',
+                'payload' => $notification
+            ];
+
+            UserShortMarketController::update($user->id, json_encode((object)$update));
+        }
+
+        Log::info('SENDING NOTIFICATION TO ALL USERS');
+        return redirect(url('/users'));
     }
 
     /**
@@ -24,7 +48,6 @@ class NortificationController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -33,9 +56,25 @@ class NortificationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        //
+        $notification = new Nortification;
+        $notification->user_id = $id;
+        $notification->notification =  $request->input('text');
+        $notification->title = $request->input('title');
+        $notification->seen = false;
+
+        $notification->save();
+
+        $update = [
+            'type' => 'notification',
+            'payload' => $notification
+        ];
+
+        UserShortMarketController::update($id, json_encode((object)$update));
+
+        Log::info('SENDING NOTIFICATION TO USER | '.$id.' |');
+        return redirect(url('/users'));
     }
 
     /**
@@ -67,9 +106,15 @@ class NortificationController extends Controller
      * @param  \App\Nortification  $nortification
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Nortification $nortification)
+    public function update($id)
     {
-        //
+        $notification = Nortification::find($id);
+        $notification->seen = true;
+        $notification->save();
+
+        $response = (object)['status' => 'success'];
+
+        return Response::json($response, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -81,5 +126,16 @@ class NortificationController extends Controller
     public function destroy(Nortification $nortification)
     {
         //
+    }
+
+    public function getAllUserNotifications($id) {
+
+        $notifications = Nortification::where('user_id', $id)
+                            ->select(['id', 'title', 'notification', 'seen', 'created_at'])
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
+        return Response::json($notifications, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
+
     }
 }

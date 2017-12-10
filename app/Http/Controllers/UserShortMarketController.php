@@ -70,11 +70,19 @@ class UserShortMarketController extends Controller
      * @param  \App\ArticlesShortMarket  $articlesShortMarket
      * @return \Illuminate\Http\Response
      */
-    static public function update($id)
+    static public function update($id, $update)
     {
+
         $UserShortMarket = UserShortMarket::where('user_id', $id)->first();
-        $UserShortMarket['update'] = self::generateRandomString();
+
+        if (!$UserShortMarket) {
+            return;
+        }
+
+        $UserShortMarket['update'] = $update;
+
         $UserShortMarket->save();
+        unset($UserShortMarket);
     }
 
     /**
