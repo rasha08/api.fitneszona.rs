@@ -77,8 +77,16 @@
     <!-- Scripts -->
     <script src="https://fitneszona.rs/api/public/js/app.js"></script>
     <script src="https://fitneszona.rs/api/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
+    
     <script>
-        CKEDITOR.replace( 'article-ckeditor' );
+        function a() {
+            try {
+                CKEDITOR.replace( 'article-ckeditor' );
+            } catch (e) {
+            }
+        };
+
+        a();
     </script>
 </body>
 </html>

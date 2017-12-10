@@ -21,7 +21,9 @@ class WebsiteUsersController extends Controller
      */
     public function index()
     {
-        $users = WebsiteUsers::all();
+        $users = WebsiteUsers::where('id', '>', 0)
+        ->orderBy('created_at', 'desc')
+        ->paginate(15);
         Log::info('GET ALL USERS');
 
         return view('users.all')->with('users', $users);

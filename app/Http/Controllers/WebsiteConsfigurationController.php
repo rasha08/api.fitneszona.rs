@@ -27,7 +27,7 @@ class WebsiteConsfigurationController extends Controller
         'power_lifting'
     ];
 
-    private $validThemes = ['light', 'dark', 'urban', 'roboto', 'art'];
+    private $validThemes = ['light', 'dark', 'winter', 'nature', 'art'];
 
 
     /**
@@ -173,6 +173,7 @@ class WebsiteConsfigurationController extends Controller
         $configuration->active_categories = $this->getFullActiveCategoryObjects(explode('|', $configuration->active_categories));
         $configuration->tags_priority_list = explode('|', $configuration->tags_priority_list);
         $configuration['subscriptionId'] = ConfigurationShortMarketController::getSubscriptionId($id);
+        $configuration['validThemeOptions'] = $this->validThemes;
 
         return $configuration;
     }
@@ -233,7 +234,7 @@ class WebsiteConsfigurationController extends Controller
         foreach ($categories as $category) {
             $fullMarket = [];
             switch ($category) {
-                case 'power_liftting':
+                case 'power_lifting':
                     $fullMarket['name'] = 'Power Liftting';
                     $fullMarket['urlSlug'] = 'power-lifting';
                     $fullMarket['category'] = 'power';
