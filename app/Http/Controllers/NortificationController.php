@@ -7,6 +7,7 @@ use App\WebsiteUsers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\UserShortMarketController;
 use Illuminate\Support\Facades\Response;
+use App\UserConfiguration;
 
 use Log;
 
@@ -25,6 +26,7 @@ class NortificationController extends Controller
             $notification->user_id = $user->id;
             $notification->notification =  $request->input('text');
             $notification->title = $request->input('title');
+            $notification->url = $request->input('url');
             $notification->seen = false;
 
             $notification->save();
@@ -62,6 +64,7 @@ class NortificationController extends Controller
         $notification->user_id = $id;
         $notification->notification =  $request->input('text');
         $notification->title = $request->input('title');
+        $notification->url = $request->input('url');
         $notification->seen = false;
 
         $notification->save();
@@ -137,5 +140,37 @@ class NortificationController extends Controller
 
         return Response::json($notifications, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
 
+    }
+
+    static public function notifySubscribersOfNewArticleTags($themesArray = [], $title, $description, $image_url, $url) {
+        $notifiedUsers = [];
+
+        $formatedNoritficationText = '<p><p><img src="'.$image_url.'" /></p><p>'.$description.'</p></p>';
+        $userSubscriptions = UserConfiguration::select('noritification_for_themes', 'user_id')->where('id', '>', 0)->get()->toArray();
+       
+        foreach ($userSubscriptions as $subscriber) {
+            if(!empty($subscriber['noritification_for_themes'])) {
+                foreach (json_decode($subscriber['noritification_for_themes']) as $subcribedTheme) {
+                    if (in_array($subcribedTheme, $themesArray) && !in_array($subscriber['user_id'], $notifiedUsers)) {
+                        $notification = new Nortification;
+                        $notification->user_id = $subscriber['user_id'];
+                        $notification->notification = $formatedNoritficationText;
+                        $notification->title = $title;
+                        $notification->url = $url;
+                        $notification->seen = false;
+        
+                        $update = [
+                            'type' => 'notification',
+                            'payload' => $notification
+                        ];
+                
+                        UserShortMarketController::update($subscriber['user_id'], json_encode((object)$update));
+                
+                        Log::info('SENDING NOTIFICATION TO USER | '.$subscriber['user_id'].' |');
+                        array_push($notifiedUsers, $subscriber['user_id']);
+                    }
+                }
+            }
+        }
     }
 }

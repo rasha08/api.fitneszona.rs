@@ -13,6 +13,7 @@ use App\WebsiteUsers;
 use App\ArticlesShortMarket;
 use App\Http\Controllers\WebsiteConsfigurationController;
 use App\Http\Controllers\ArticlesShortMarketController;
+use App\Http\Controllers\NortificationController;
 
 use Log;
 
@@ -129,7 +130,16 @@ class ArticlesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(StoreArticleRequest $request)
-    {
+    {   
+        $oldArticle = Articles::where('title', $request->input('title'))->first();
+        if ($oldArticle) {
+            $data = [
+                'error' => 'already exists'
+            ];
+            Log::info('ERROR | ARTICLE ALREADY EXISTS');
+            return redirect()->route('articles.index')->with('data', $data);
+        }
+
         $article = new Articles;
 
         $article->title = $request->input('title');
@@ -144,6 +154,13 @@ class ArticlesController extends Controller
         $article->save();
 
         ArticlesShortMarketController::store($article->id);
+        NortificationController::notifySubscribersOfNewArticleTags(
+            explode('|', $article->tags),
+            $article->title,
+            $article->description,
+            $article->thumb_image_url,
+            '/'.'tekstovi/'.self::getArticleCategoryUrlSlugForArticle( $article->category).'/'.$article->article_title_url_slug
+        );
 
         $data = [
             'success' => 'create'
