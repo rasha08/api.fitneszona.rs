@@ -71,3 +71,8 @@ Route::post('notification/{id}', 'NortificationController@store')->middleware(['
 Route::post('notification/all/users', 'NortificationController@index')->middleware(['auth', 'api']);
 Route::get('api/notification/{id}/seen-notification', 'NortificationController@update')->middleware('api');
 Route::get('api/notification/{id}/get-all-notifications', 'NortificationController@getAllUserNotifications')->middleware('api');
+
+Route::group(['middleware' => ['api', 'auth']], function () {
+    Route::resource('statistics', 'UserStatisticController');
+});
+

@@ -11,7 +11,7 @@
     <title>API Fitnes Zona</title>
 
     <!-- Styles -->
-    <link href="https://fitneszona.rs/api/public/css/app.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
     <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 </head>
 <body>
@@ -75,9 +75,9 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://fitneszona.rs/api/public/js/app.js"></script>
-    <script src="https://fitneszona.rs/api/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
-    
+    <script src="/js/app.js"></script>
+    <script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
+
     <script>
         function a() {
             try {
