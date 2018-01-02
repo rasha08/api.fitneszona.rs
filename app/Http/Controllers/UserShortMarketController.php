@@ -37,7 +37,7 @@ class UserShortMarketController extends Controller
     {
         $UserShortMarket = new UserShortMarket;
         $UserShortMarket['user_id'] = $id;
-        $UserShortMarket['update'] = 'update';
+        $UserShortMarket['update'] = '{}';
         $UserShortMarket->save();
     }
 

@@ -153,8 +153,11 @@ class WebsiteUsersController extends Controller
     static public function action(Request $request, $id)
     {
         $user = WebsiteUsers::find($id);
-        $article = Articles::find($request['textId']);
-
+        if ((int)$request['textId'] > 0) {
+            $article = Articles::find($request['textId']);
+        } else {
+            $article = Articles::where('article_title_url_slug', $request['textId'])->first();
+        }
         if ($request['action'] === 'addLikedCategory') {
             if (!$user->liked_categories) {
                 $user->liked_categories = $article->category;

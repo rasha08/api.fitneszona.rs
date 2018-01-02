@@ -27,7 +27,7 @@ class WebsiteConsfigurationController extends Controller
         'power_lifting'
     ];
 
-    private $validThemes = ['light', 'dark', 'winter', 'nature', 'art'];
+    private $validThemes = ['light', 'dark', 'winter', 'nature', 'metal', 'art'];
 
 
     /**

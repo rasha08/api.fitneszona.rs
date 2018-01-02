@@ -14,6 +14,8 @@ use App\ArticlesShortMarket;
 use App\Http\Controllers\WebsiteConsfigurationController;
 use App\Http\Controllers\ArticlesShortMarketController;
 use App\Http\Controllers\NortificationController;
+use App\Http\Controllers\UserStatisticController;
+use App\Http\Controllers\WebsiteUsersController;
 
 use Log;
 
@@ -44,7 +46,7 @@ class ArticlesController extends Controller
     static private function fiterComentsForResponse($comments = []) {
         foreach ($comments as $comment) {
            $user = WebsiteUsers::find($comment->user_id);
-           $comment->user_id = NULL;
+          unset($comment->user_id);
            $comment->userName = $user->first_name.' '.$user->last_name;
         }
 
@@ -130,7 +132,7 @@ class ArticlesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(StoreArticleRequest $request)
-    {   
+    {
         $oldArticle = Articles::where('title', $request->input('title'))->first();
         if ($oldArticle) {
             $data = [
@@ -265,8 +267,32 @@ class ArticlesController extends Controller
     /**
     *  Returns all articles from Database
     */
-     public function all()
+     public function all(Request $request)
     {
+        $uid = $request->query('uid');
+        if ($uid) {
+            $data = [];
+            $data['uid'] = $uid;
+            $data['stats'] = [];
+
+            array_push(
+                $data['stats'],
+                [
+                    'statType' => 'number_of_visits_by_day',
+                    'statData' => strtolower(substr((string)date("D")), 0, 3)
+                ],
+                [
+                    'statType' => 'time_of_visits',
+                    'statData' => date("H:i:s")
+                ],
+                [
+                    'statType' => 'number_of_visits',
+                    'statData' => 1
+                ]
+            );
+            UserStatisticController::updateUserData((object)$data);
+        }
+
         $articles = Articles::all();;
 
         $articles = self::filterForResponse($articles);
@@ -279,8 +305,32 @@ class ArticlesController extends Controller
     /**
     *  Returns top articles from Database
     */
-    public function top()
+    public function top(Request $request)
     {
+        $uid = $request->query('uid');
+        if ($uid) {
+            $data = [];
+            $data['uid'] = $uid;
+            $data['stats'] = [];
+
+            array_push(
+                $data['stats'],
+                [
+                    'statType' => 'last_visit_and_page',
+                    'statData' => [
+                        'date' => date("D M j G:i:s T Y"),
+                        'page' => 'najcitaniji-tekstovi'
+                    ]
+                ],
+                [
+                    'statType' => 'visited_categories',
+                    'statData' => 'top'
+                ]
+            );
+            UserStatisticController::updateUserData((object)$data);
+
+        }
+
         $articles = Articles::where('id', '>', 0)
             ->orderBy('seen_times', 'desc')
             ->take(20)
@@ -296,8 +346,32 @@ class ArticlesController extends Controller
     /**
     *  Returns top articles from Database
     */
-    public function latest()
+    public function latest(Request $request)
     {
+        $uid = $request->query('uid');
+        if ($uid) {
+            $data = [];
+            $data['uid'] = $uid;
+            $data['stats'] = [];
+
+            array_push(
+                $data['stats'],
+                [
+                    'statType' => 'last_visit_and_page',
+                    'statData' => [
+                        'date' => date("D M j G:i:s T Y"),
+                        'page' => 'najnoviji-tekstovi'
+                    ]
+                ],
+                [
+                    'statType' => 'visited_categories',
+                    'statData' => 'latest'
+                ]
+            );
+
+            UserStatisticController::updateUserData((object)$data);
+        }
+
         $articles = Articles::where('id', '>', 0)
             ->orderBy('created_at', 'desc')
             ->take(20)
@@ -313,8 +387,32 @@ class ArticlesController extends Controller
     /**
     *  Returns all articles from category
     */
-    public function category($category)
+    public function category(Request $request, $category)
     {
+        $uid = $request->query('uid');
+        if ($uid) {
+            $data = [];
+            $data['uid'] = $uid;
+            $data['stats'] = [];
+
+            array_push(
+                $data['stats'],
+                [
+                    'statType' => 'last_visit_and_page',
+                    'statData' => [
+                        'date' => date("D M j G:i:s T Y"),
+                        'page' => $category
+                    ]
+                ],
+                [
+                    'statType' => 'visited_categories',
+                    'statData' => $category
+                ]
+            );
+
+            UserStatisticController::updateUserData((object)$data);
+        }
+
         $articles = Articles::where('category', $category)->get();
 
         $articles = self::filterForResponse($articles);
@@ -327,7 +425,7 @@ class ArticlesController extends Controller
     /**
     *  Returns toparticles from category
     */
-    public function categoryTopArticles($category)
+    public function categoryTopArticles(Request $request, $category)
     {
         $articles = Articles::where('category', $category)
             ->orderBy('seen_times', 'desc')
@@ -344,7 +442,7 @@ class ArticlesController extends Controller
     /**
     *  Returns latest articles from category
     */
-    public function categoryLatestArticles($category)
+    public function categoryLatestArticles(Request $request, $category)
     {
         $articles = Articles::where('category', $category)
             ->orderBy('updated_at', 'desc')
@@ -358,7 +456,7 @@ class ArticlesController extends Controller
         return Response::json($articles, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
-    public static function article($id)
+    public static function article(Request $request, $id)
     {
         if ((int)$id > 0) {
             $article = Articles::find($id);
@@ -369,6 +467,7 @@ class ArticlesController extends Controller
         if (!$article) {
             return '{"status":"article not found"}';
         }
+
 
         $article->seen_times = $article->seen_times + 1;
         $article->save();
@@ -394,6 +493,45 @@ class ArticlesController extends Controller
                 'payload' => json_encode($payload)
             ]
         );
+
+        $uid = $request->query('uid');
+        $aof = $request->query('aof');
+        $f = $request->query('f');
+
+        if ($uid) {
+            $data = [];
+            $data['uid'] = $uid;
+            $data['stats'] = [];
+
+            $request['action'] = 'addTextToVisited';
+            $request['textId'] = $id;
+
+            WebsiteUsersController::action($request, $uid);
+
+            array_push(
+                $data['stats'],
+                [
+                    'statType' => 'visited_tags',
+                    'statData' => $article->tags
+                ],
+                [
+                    'statType' => $aof,
+                    'statData' => $article->id
+                ]
+            );
+
+            if ($f) {
+                array_push(
+                $data['stats'],
+                    [
+                        'statType' => 'texts_open_that_was_featured',
+                        'statData' => $article->id
+                    ]
+                );
+            }
+
+            UserStatisticController::updateUserData((object)$data);
+        }
 
         Log::info('GET ARTICLE  : | '.$id .' |');
 
@@ -664,7 +802,7 @@ class ArticlesController extends Controller
     {
         switch ($category) {
                 case 'power_liftting':
-                    $urlSlug = 'power-lifting';
+                    $urlSlug = 'power-liftting';
                     break;
                 case 'grupni_treninzi':
                     $urlSlug = 'grupni-treninzi';
