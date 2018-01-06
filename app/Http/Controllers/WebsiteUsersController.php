@@ -212,22 +212,6 @@ class WebsiteUsersController extends Controller
             if (strrpos($user->visited_text_id, (string)$article->id) === false) {
                 $user->visited_text_id = $user->visited_text_id.'|'.$article->id;
             }
-
-            if (!$user->visited_categories) {
-                $user->visited_categories = $article->category;
-            } else if (strrpos($user->visited_categories, $article->category) == false) {
-                $user->visited_categories = $user->visited_categories.'|'.$article->category;
-            }
-
-            $tags = explode('|', $article->tags);
-            foreach ($tags as $tag) {
-                if (!$user->visited_tags) {
-                $user->visited_tags = $tag;
-                } else if (strrpos($user->visited_tags, $tag) == false) {
-                    $user->visited_tags = $user->visited_tags.'|'.$tag;
-                }
-            }
-
             $user->save();
         } else {
             return '"status": "unknown action"';

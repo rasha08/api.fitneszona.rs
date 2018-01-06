@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\UserStatistic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\UserShortMarketController;
+use Log;
 
 class UserStatisticController extends Controller
 {
@@ -84,8 +85,22 @@ class UserStatisticController extends Controller
         //
     }
 
+    static public function get($userId, $prop)
+    {   
+        $result = UserStatistic::where('user_id', $userId)->select($prop)->first();
+        
+        return $result ? json_decode($result->toArray()[$prop]) : [];
+    }
+
+    static public function set($userId, $prop, $value)
+    {
+        return UserStatistic::where('user_id', $userId)->update([$prop => json_encode((array)$value)]);
+    }
+
     static public function updateUserData($data)
     {
+        Log::info('UPDATING STATISTIC FOR USER | '. $data->uid . ' |'); 
+
         $userStats = UserStatistic::where('user_id', $data->uid)->get();
         if ($userStats->isEmpty()) {
             $userStats = new UserStatistic;
@@ -115,35 +130,42 @@ class UserStatisticController extends Controller
 
                     break;
                 case 'number_of_visits':
-                    if ($userStats['lnumber_of_visits']) {
-                        $userStats['lnumber_of_visits'] += 1;
+                    if ($userStats['number_of_visits']) {
+                        $userStats['number_of_visits'] += 1;
                     } else {
-                        $userStats['lnumber_of_visits'] = 1;
+                        $userStats['number_of_visits'] = 1;
                     }
 
                     break;
                 default:
-                    if ($userStats[$stat['statType']]) {
+                // dd(json_encode(self::get($data->uid, $stat['statType'])));
+                    if (!self::get($data->uid, $stat['statType'])) {
                         if ($stat['statType'] === 'visited_tags') {
-                            array_merge($userStats[$stat['statType']], $stat['statData']);
+                            self::set($data->uid, $stat['statType'], (array)$stat['statData']);
                         } else {
-                            array_push($userStats[$stat['statType']], $stat['statData']);
-                        }
-
-                        $userStats[$stat['statType']] =
-                            json_encode(array_unique($userStats[$stat['statType']]));
+                            self::set($data->uid, $stat['statType'], (array)[$stat['statData']]);  
+                        }                     
                     } else {
-                        $userStats[$stat['statType']] = json_encode([$stat['statData']]);
+                        if ($stat['statType'] === 'visited_tags') {
+                            $result = array_merge(self::get($data->uid, $stat['statType']), $stat['statData']);
+                        } else {
+                            $result = self::get($data->uid, $stat['statType']);                            
+                           array_push($result, $stat['statData']);
+                        }
+                        $result = array_unique($result);                            
+                        self::set($data->uid, $stat['statType'], (array)$result);
                     }
-                    break;
+                break;
             }
         }
-
-        $userStats->save();
+        
+        $user =  method_exists($userStats, 'save') ?  $userStats->save() : null;
 
         $update;
         $update['type'] = 'userStatistic';
         $update['payload'] = json_encode($userStats);
+
+        Log::info('STATISTIC FOR USER | '. $data->uid . ' | UPDATED');
 
         UserShortMarketController::update($data->uid, json_encode((object)$update));
     }

@@ -16,6 +16,7 @@ use App\Http\Controllers\ArticlesShortMarketController;
 use App\Http\Controllers\NortificationController;
 use App\Http\Controllers\UserStatisticController;
 use App\Http\Controllers\WebsiteUsersController;
+use App\Http\Controllers\AllArticlesShortMarketController;
 
 use Log;
 
@@ -296,10 +297,24 @@ class ArticlesController extends Controller
         $articles = Articles::all();;
 
         $articles = self::filterForResponse($articles);
-
+        $topArticles = $this->getTopArticlesArray();
+        $latestArticles = $this->getLatestArticlesArray($topArticles);
+        $indexArticles = $this->getIndexPageArticlesArray($topArticles, $latestArticles);
+        $response = [
+            'articles' => $articles,
+            'topArticles' => $topArticles,
+            'latestArticles' => $latestArticles,
+            'indexPageArticles' => $indexArticles
+        ];
+        
         Log::info('GET ALL ARTICLES | '.count($articles).' | ');
-
-        return Response::json($articles, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
+        $update = [
+            'type' => 'update',
+            'payload' => '{}'
+        ];
+        
+        AllArticlesShortMarketController::update($topArticles, $latestArticles, $indexArticles, $update);
+        return Response::json($response, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -331,12 +346,7 @@ class ArticlesController extends Controller
 
         }
 
-        $articles = Articles::where('id', '>', 0)
-            ->orderBy('seen_times', 'desc')
-            ->take(20)
-            ->get();
-
-        $articles = self::filterForResponse($articles);
+        $articles = $this->getLatestArticlesArray($this->getTopArticlesArray());
 
         Log::info('GET TOP ARTICLES');
 
@@ -372,12 +382,7 @@ class ArticlesController extends Controller
             UserStatisticController::updateUserData((object)$data);
         }
 
-        $articles = Articles::where('id', '>', 0)
-            ->orderBy('created_at', 'desc')
-            ->take(20)
-            ->get();
-
-        $articles = self::filterForResponse($articles);
+        $articles = $this->getTopArticlesArray();
 
         Log::info('GET TOP ARTICLES');
 
@@ -413,9 +418,16 @@ class ArticlesController extends Controller
             UserStatisticController::updateUserData((object)$data);
         }
 
-        $articles = Articles::where('category', $category)->get();
-
-        $articles = self::filterForResponse($articles);
+        $articles = array_map(
+            function($element) {
+                return $element['id'];
+            },
+            Articles::where('category', $category)
+                            ->orderBy('updated_at', 'desc')
+                            ->select('id')
+                            ->get()
+                            ->toArray()
+        );
 
         Log::info('GET ALL ARTICLES FROM CATEGORY : | '.strtoupper($category) .' |');
 
@@ -769,29 +781,10 @@ class ArticlesController extends Controller
     }
 
     public function getIndexPageArticles() {
-        $allArticles = Articles::where('id', '>', 0)
-                               ->orderBy('updated_at', 'desc')
-                               ->get();
+        $topArticles = $this->getTopArticlesArray();
+        $latestArticles = $this->getLatestArticlesArray($topArticles);
 
-        $topArticles = Articles::where('id', '>', 0)
-                               ->orderBy('seen_times', 'desc')
-                               ->take(20)
-                               ->get();
-
-        $latestArticles = Articles::where('id', '>', 0)
-            ->orderBy('created_at', 'desc')
-            ->take(20)
-            ->get();
-
-        $allArticles = self::filterForResponse($allArticles)->toArray();
-        $topArticles = self::filterForResponse($topArticles)->toArray();
-        $latestArticles = self::filterForResponse($latestArticles)->toArray();
-
-        array_push($topArticles, $latestArticles);
-
-        $indexArticles = array_slice(array_filter(array_splice($allArticles, 20, -1), function ($element) use ($topArticles) {
-                return !in_array($element, $topArticles);
-            }), 0, 20);
+        $indexArticles = $this->getIndexPageArticlesArray($topArticles, $latestArticles);
 
         Log::info('GET ARTICLES FOR INDEX PAGE');
 
@@ -823,4 +816,70 @@ class ArticlesController extends Controller
         return $urlSlug;
     }
 
+    public function getIndexPageArticlesArray($topArticles, $latestArticles)
+    {
+        $allArticles = array_map(
+            function ($element) {
+                return $element['id'];
+            }, Articles::where('id', '>', 0)
+                       ->orderBy('updated_at', 'desc')
+                       ->select('id')
+                       ->get()
+                       ->toArray()
+        );
+
+        Log::info($topArticles);
+        Log::info($latestArticles);
+        
+        return array_slice(
+            array_filter(
+                $allArticles,
+                function ($element) use ($topArticles, $latestArticles) {
+                    return !in_array($element, $topArticles) && !in_array($element, $latestArticles);
+            }),
+            0,
+            40
+        );
+    }
+
+    public function getTopArticlesArray()
+    {
+        $articles = Articles::where('id', '>', 0)
+            ->orderBy('seen_times', 'desc')
+            ->select('id')
+            ->take(40)
+            ->get()
+            ->toArray();
+
+        return array_map(
+            function($element) {
+                return $element['id'];
+            },
+            $articles
+        );
+    }
+
+    public function getLatestArticlesArray($topArticles)
+    {
+        $articles = array_map(
+            function($element) {
+                return $element['id'];
+            }, Articles::where('id', '>', 0)
+            ->orderBy('updated_at', 'desc')
+            ->select('id')
+            ->take(60)
+            ->get()
+            ->toArray()
+        );
+
+        $latestArticles = [];
+
+        foreach($articles as $id) {
+            if (!in_array($id, $topArticles)) {
+                array_push($latestArticles, $id);
+            }
+        }
+
+        return $latestArticles;
+    }
 }
