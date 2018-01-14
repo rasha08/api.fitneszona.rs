@@ -11,6 +11,7 @@ use App\Http\Controllers\UserShortMarketController;
 use App\Http\Controllers\UserConfigurationController;
 use App\Nortification;
 use Illuminate\Support\Facades\Response;
+use App\UserStatistic;
 
 use Log;
 
@@ -101,6 +102,7 @@ class WebsiteUsersController extends Controller
                                                 ->select(['id', 'title', 'notification', 'seen', 'created_at'])
                                                 ->orderBy('created_at', 'desc')
                                                 ->get();
+        
 
         return Response::json($user, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
@@ -153,6 +155,7 @@ class WebsiteUsersController extends Controller
     static public function action(Request $request, $id)
     {
         $user = WebsiteUsers::find($id);
+        $update = [];
         if ((int)$request['textId'] > 0) {
             $article = Articles::find($request['textId']);
         } else {
@@ -176,6 +179,13 @@ class WebsiteUsersController extends Controller
                 unset($likedTags[$index]);
                 $user->liked_tags = implode('|', $likedTags);
             }
+
+            $update = [
+                'type' => 'update',
+                'payload' => [
+                    'liked_tags' => json_encode(array_values(array_filter(explode('|', $user->liked_tags))))
+                ]
+            ];
         } else if ($request['action'] === 'leftSidebarChange') {
             if (!$user->favorite_tags) {
                 return '{"status":"left sidebar options have not been initialized."}';
@@ -211,7 +221,27 @@ class WebsiteUsersController extends Controller
         } else if ($request['action'] === 'addTextToVisited') {
             if (strrpos($user->visited_text_id, (string)$article->id) === false) {
                 $user->visited_text_id = $user->visited_text_id.'|'.$article->id;
+            } if (!$user->visited_categories) {
+                 $user->visited_categories = $article->category;
+            } else if (strrpos($user->visited_categories, $article->category) == false) {
+                $user->visited_categories = $user->visited_categories.'|'.$article->category;
             }
+
+            $tags = explode('|', $article->tags);
+            foreach ($tags as $tag) {
+                if (!$user->visited_tags) {
+                    $user->visited_tags = $tag;
+                } else if (strrpos($user->visited_tags, $tag) == false) {
+                    $user->visited_tags = $user->visited_tags.'|'.$tag;
+                }
+            }
+            $update = [
+                'type' => 'update',
+                'payload' => [
+                    'visited_text_id' => json_encode(array_values(array_filter(array_unique(explode('|', $user->visited_text_id)))))
+                ]
+            ];
+
             $user->save();
         } else {
             return '"status": "unknown action"';
@@ -221,7 +251,9 @@ class WebsiteUsersController extends Controller
 
 
         $user->save();
-        UserShortMarketController::update($id, 'update');
+        if($update) {
+            UserShortMarketController::update($id, $update);            
+        }
 
         return '{"status":"action success"}';
     }

@@ -11,12 +11,14 @@ use App\Like;
 use App\DisLike;
 use App\WebsiteUsers;
 use App\ArticlesShortMarket;
+use App\UserArticlesFb;
 use App\Http\Controllers\WebsiteConsfigurationController;
 use App\Http\Controllers\ArticlesShortMarketController;
 use App\Http\Controllers\NortificationController;
 use App\Http\Controllers\UserStatisticController;
 use App\Http\Controllers\WebsiteUsersController;
 use App\Http\Controllers\AllArticlesShortMarketController;
+use App\Http\Controllers\UserArticlesFbController;
 
 use Log;
 
@@ -34,6 +36,7 @@ class ArticlesController extends Controller
         'mrsavljenje'
     ];
 
+    private $userVisitedTexts = [];
 
     static protected function filterForResponse($articles = [])
     {
@@ -308,12 +311,7 @@ class ArticlesController extends Controller
         ];
         
         Log::info('GET ALL ARTICLES | '.count($articles).' | ');
-        $update = [
-            'type' => 'update',
-            'payload' => '{}'
-        ];
         
-        AllArticlesShortMarketController::update($topArticles, $latestArticles, $indexArticles, $update);
         return Response::json($response, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
     }
 
@@ -470,10 +468,10 @@ class ArticlesController extends Controller
 
     public static function article(Request $request, $id)
     {
-        if ((int)$id > 0) {
+        $article = Articles::where('article_title_url_slug', $id)->first();
+
+        if (!$article) {
             $article = Articles::find($id);
-        } else {
-            $article = Articles::where('article_title_url_slug', $id)->first();
         }
 
         if (!$article) {
@@ -525,12 +523,17 @@ class ArticlesController extends Controller
                 [
                     'statType' => 'visited_tags',
                     'statData' => $article->tags
-                ],
-                [
-                    'statType' => $aof,
-                    'statData' => $article->id
                 ]
             );
+            if ($aof) {
+                array_push(
+                $data['stats'],
+                    [
+                        'statType' => 'visited_tags',
+                        'statData' => $article->tags
+                    ]
+                );
+            }
 
             if ($f) {
                 array_push(
@@ -544,6 +547,16 @@ class ArticlesController extends Controller
 
             UserStatisticController::updateUserData((object)$data);
         }
+
+        $update = [
+            'type' => 'update',
+            'payload' => '{}'
+        ];
+
+        $topArticles = self::getTopArticlesArray();
+        $latestArticles = self::getLatestArticlesArray($topArticles);
+        $indexArticles = self::getIndexPageArticlesArray($topArticles, $latestArticles);
+        AllArticlesShortMarketController::update($topArticles, $latestArticles, $indexArticles,  $update);
 
         Log::info('GET ARTICLE  : | '.$id .' |');
 
@@ -816,7 +829,7 @@ class ArticlesController extends Controller
         return $urlSlug;
     }
 
-    public function getIndexPageArticlesArray($topArticles, $latestArticles)
+    static public function getIndexPageArticlesArray($topArticles, $latestArticles)
     {
         $allArticles = array_map(
             function ($element) {
@@ -827,10 +840,7 @@ class ArticlesController extends Controller
                        ->get()
                        ->toArray()
         );
-
-        Log::info($topArticles);
-        Log::info($latestArticles);
-        
+      
         return array_slice(
             array_filter(
                 $allArticles,
@@ -842,7 +852,7 @@ class ArticlesController extends Controller
         );
     }
 
-    public function getTopArticlesArray()
+    static public function getTopArticlesArray()
     {
         $articles = Articles::where('id', '>', 0)
             ->orderBy('seen_times', 'desc')
@@ -859,7 +869,7 @@ class ArticlesController extends Controller
         );
     }
 
-    public function getLatestArticlesArray($topArticles)
+    static public function getLatestArticlesArray($topArticles)
     {
         $articles = array_map(
             function($element) {

@@ -21,7 +21,7 @@ class SearchController extends Controller
     
     public function __construct() {
         $this->articles = Articles::where('id', '>', 0)
-            ->select('title', 'category', 'tags', 'article_title_url_slug', 'text')
+            ->select('id', 'text')
             ->orderBy('created_at', 'desc')
             ->get();
     

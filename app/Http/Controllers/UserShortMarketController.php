@@ -79,7 +79,7 @@ class UserShortMarketController extends Controller
             return;
         }
 
-        $UserShortMarket['update'] = $update;
+        $UserShortMarket['update'] = json_encode($update);
 
         $UserShortMarket->save();
         unset($UserShortMarket);

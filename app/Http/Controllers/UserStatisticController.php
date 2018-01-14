@@ -147,7 +147,7 @@ class UserStatisticController extends Controller
                         }                     
                     } else {
                         if ($stat['statType'] === 'visited_tags') {
-                            $result = array_merge(self::get($data->uid, $stat['statType']), $stat['statData']);
+                            break;
                         } else {
                             $result = self::get($data->uid, $stat['statType']);                            
                            array_push($result, $stat['statData']);
@@ -167,6 +167,6 @@ class UserStatisticController extends Controller
 
         Log::info('STATISTIC FOR USER | '. $data->uid . ' | UPDATED');
 
-        UserShortMarketController::update($data->uid, json_encode((object)$update));
+        // UserShortMarketController::update($data->uid, json_encode((object)$update));
     }
 }
