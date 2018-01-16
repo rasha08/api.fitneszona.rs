@@ -71,10 +71,10 @@ class UserConfigurationShortMarketController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    static public function update($id)
+    static public function update($id, $update)
     {
         $UserConfigurationShortMarket = UserConfigurationShortMarket::where('user_id', $id)->first();
-        $UserConfigurationShortMarket['update'] = self::generateRandomString();
+        $UserConfigurationShortMarket['update'] = json_encode($update);
         $UserConfigurationShortMarket->save();
     }
 

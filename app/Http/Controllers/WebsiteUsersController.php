@@ -9,6 +9,7 @@ use App\Http\Requests\RegisterUserRequest;
 use App\Http\Controllers\ArticlesShortMarketController;
 use App\Http\Controllers\UserShortMarketController;
 use App\Http\Controllers\UserConfigurationController;
+use App\Http\Controllers\UserConfigurationShortMarketController;
 use App\Nortification;
 use Illuminate\Support\Facades\Response;
 use App\UserStatistic;
@@ -97,9 +98,9 @@ class WebsiteUsersController extends Controller
         $user['configuration'] = UserConfigurationController::show($id);
         unset($user['created_at']);
         unset($user['updated_at']);
-        $user['nptifications']  = Nortification::where('user_id', $user->id)
+        $user['notifications']  = Nortification::where('user_id', $user->id)
                                                 ->where('seen', '0')
-                                                ->select(['id', 'title', 'notification', 'seen', 'created_at'])
+                                                ->select(['id', 'title', 'notification', 'url', 'seen', 'created_at'])
                                                 ->orderBy('created_at', 'desc')
                                                 ->get();
         

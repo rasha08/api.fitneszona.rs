@@ -109,16 +109,16 @@ class UserConfigurationController extends Controller
      */
     static public function update(Request $request, $id)
     {
+        Log::info($request);
+        
         $userConfiguration = UserConfiguration::where('user_id', $id)->first();
-
-        $userConfiguration->user_id = $id;
         $userConfiguration->thema = $request['thema'] ?:  $userConfiguration->thema;
         $userConfiguration->categories_in_navigation = json_encode($request['categoriesInNavigation']) ?: $userConfiguration->categories_in_navigation;
         $userConfiguration->number_of_texts_in_left_sidebar = $request['numberOfTextsInLeftSidebar'] ?: $userConfiguration->number_of_texts_in_left_sidebar;
         $userConfiguration->noritification_for_themes = json_encode($request['noritificationForThemes']) ?: $userConfiguration->noritification_for_themes;
         $userConfiguration->save();
 
-        UserConfigurationShortMarketController::update($id);
+        UserConfigurationShortMarketController::update($id, UserConfiguration::where('user_id', $id)->first());
         
         Log::info('UPDATED USER CONFIGURATION FOR USER: | '. $id.' |');
        
