@@ -723,6 +723,8 @@ class ArticlesController extends Controller
         $nameSlug = preg_replace('/\;/', '', $nameSlug);
         $nameSlug = preg_replace('/\(/', '', $nameSlug);
         $nameSlug = preg_replace('/\)/', '', $nameSlug);
+        $nameSlug = preg_replace('/\"/', '', $nameSlug);
+        $nameSlug = preg_replace('/\"/', '', $nameSlug);        
         $nameSlug = preg_replace('/\-–-/', '-', $nameSlug);
         $nameSlug = preg_replace('/\&/', '', $nameSlug);
 

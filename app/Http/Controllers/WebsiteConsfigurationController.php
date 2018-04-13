@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ArticlesController;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\ConfigurationShortMarketController;
+use App\CacheModel;
 
 use Log;
 
@@ -112,7 +113,9 @@ class WebsiteConsfigurationController extends Controller
         $configuration->number_of_articles_in_sidebar = $request->input('number_of_articles_in_sidebar');
         $configuration->is_landing_page_enabled = $request->input('is_landing_page_enabled') ? true : false;
         $configuration->is_chat_bot_enabled = $request->input('is_chat_bot_enabled') ? true : false;
-        $configuration->is_google_map_enabled = $request->input('is_google_map_enabled') ? true : false;
+        $configuration->banner_title = $request->input('banner_title') ? true : false;
+        $configuration->banner_title = $request->input('banner_title') ?
+        $request->input('banner_title') : $configuration->banner_title;
         $configuration->banner_text = $request->input('banner_text') ?
             $request->input('banner_text') : $configuration->banner_text;
         $configuration->about_us = $request->input('about_us') ?
@@ -143,6 +146,8 @@ class WebsiteConsfigurationController extends Controller
 
 
         $configuration->save();
+        
+        $this-> createConfigurationCache($id);
 
         $activeCategories = explode('|', $activeCategories);
 
@@ -159,6 +164,25 @@ class WebsiteConsfigurationController extends Controller
         return redirect('/configuration/'.$id.'/edit')->with('data', $data);
     }
 
+    public function createConfigurationCache($id = 1)
+    {
+        $configurationCache = WebsiteConsfiguration::find($id);
+
+        $configurationCache->active_categories = $this->getFullActiveCategoryObjects(explode('|', $configurationCache->active_categories));
+        $configurationCache->tags_priority_list = explode('|', $configurationCache->tags_priority_list);
+        $configurationCache['subscriptionId'] = ConfigurationShortMarketController::getSubscriptionId($id);
+        $configurationCache['validThemeOptions'] = $this->validThemes;
+
+        if (empty(CacheModel::where('key', 'websiteConfiguration')->first())) {
+            $cache = new CacheModel;
+            $cache['key'] = 'websiteConfiguration';
+            $cache['value'] = json_encode($configurationCache);
+            $cache->save();
+        } else {
+            CacheModel::where('key', 'websiteConfiguration')->update(['value' => json_encode($configurationCache)]);
+        }
+    }
+
     /**
      * Display the specified resource.
      *
@@ -167,15 +191,7 @@ class WebsiteConsfigurationController extends Controller
      */
     public function getConfiguration($id)
     {
-        Log::info('GET CONFIGURATION FOR WEBSITE ID: | '.$id.' |');
-        $configuration = WebsiteConsfiguration::find($id);
-
-        $configuration->active_categories = $this->getFullActiveCategoryObjects(explode('|', $configuration->active_categories));
-        $configuration->tags_priority_list = explode('|', $configuration->tags_priority_list);
-        $configuration['subscriptionId'] = ConfigurationShortMarketController::getSubscriptionId($id);
-        $configuration['validThemeOptions'] = $this->validThemes;
-
-        return $configuration;
+        return CacheModel::where('key', 'websiteConfiguration')->first();
     }
 
     public function getActiveCategories($id)

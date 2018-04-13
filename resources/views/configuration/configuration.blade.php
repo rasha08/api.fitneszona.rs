@@ -117,16 +117,16 @@
                             </div>
                            </div>
                            <br><hr><br>
-                           <div class="form-group{{ $errors->has('is_google_map_enabled') ? ' has-error' : '' }}">
-                            <label class="col-md-8 control-label">Da li je "Google Map" omogucen?</label>
+                           <div class="form-group{{ $errors->has('is_promo_banner_enabled') ? ' has-error' : '' }}">
+                            <label class="col-md-8 control-label">Da li je reklamni baner omogucen?</label>
                              <div class="checkbox left col-md-4"> 
-                               <label for="is_google_map_enabled" class="left col-md-12 control-label">
-                                <input name="is_google_map_enabled" id="is_google_map_enabled" type="checkbox" {{ $data['configuration']['is_google_map_enabled'] ? 'checked' : '' }}>
+                               <label for="is_promo_banner_enabled" class="left col-md-12 control-label">
+                                <input name="is_promo_banner_enabled" id="is_promo_banner_enabled" type="checkbox" {{ $data['configuration']['is_promo_banner_enabled'] ? 'checked' : '' }}>
                                 Omoguci Google Map
                               </label>
-                              @if ($errors->has('is_google_map_enabled'))
+                              @if ($errors->has('is_promo_banner_enabled'))
                                 <span class="help-block">
-                                   <strong>{{ $errors->first('is_google_map_enabled') }}</strong>
+                                   <strong>{{ $errors->first('is_promo_banner_enabled') }}</strong>
                                 </span>
                               @endif
                             </div>
@@ -176,6 +176,19 @@
                                </div>
                            </div>
                            <br><hr><br>
+                          <br><hr><br>
+                           <div class="form-group{{ $errors->has('banner_title') ? ' has-error' : '' }}">
+                               <label for="banner_title" class="col-md-4 control-label">Naslov reklamnog banner-a:</label>
+                               <div class="col-md-8">
+                                   <input id="banner_title" type="text" class="form-control" name="banner_title" value="{{ $data['configuration']['banner_title'] }}">
+                                   @if ($errors->has('banner_title'))
+                                       <span class="help-block">
+                                           <strong>{{ $errors->first('banner_title') }}</strong>
+                                       </span>
+                                   @endif
+                               </div>
+                           </div>
+                           <br><br><hr><br>
                            <div class="form-group{{ $errors->has('banner_text') ? ' has-error' : '' }}">
                                <label for="banner_text" class="col-md-2 control-label center">Tekst Na banner-u sajta</label>
                                <div class="col-md-10">

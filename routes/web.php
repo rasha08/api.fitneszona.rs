@@ -38,6 +38,7 @@ Route::get('api/articles/short/{id}', 'ArticlesController@getArticleShortMArket'
 Route::get('api/articles/{id}/catgory-and-tags', 'ArticlesController@getArticleCategoryAndTags')->middleware(['api', 'throttle:500,1']);
 Route::get('api/articles/all/create-url-slugs', 'ArticlesController@createUrlSlugs')->middleware(['api', 'throttle:500,1']);
 Route::post('api/articles/all/counter', 'ArticlesController@counter')->middleware(['api', 'throttle:500,1']);
+Route::post('api/articles/all/cache', 'ArticlesController@createCache')->middleware(['api', 'throttle:500,1']);
 
 Route::post('api/articles/{id}/', 'ArticlesController@action')->middleware('api');
 

@@ -58,7 +58,7 @@ class UserConfigurationController extends Controller
         $userConfiguration->noritification_for_themes = json_encode($request['noritificationForThemes']) ?: NULL;
         $userConfiguration->save();
 
-        UserConfigurationShortMarketController::store( $id);
+        UserConfigurationShortMarketController::update( $id);
         
         Log::info('SAVED USER CONFIGURATION FOR USER: | '. $id.' |');
        

@@ -34,11 +34,11 @@ class UserConfigurationShortMarketController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    static public function store($id)
+    static public function store($id, $update)
     {
         $UserConfigurationShortMarket = new UserConfigurationShortMarket;
         $UserConfigurationShortMarket['user_id'] = $id;
-        $UserConfigurationShortMarket['update'] = 'update';
+        $UserConfigurationShortMarket['update'] = $update;
         $UserConfigurationShortMarket->save();
     }
 
@@ -74,6 +74,11 @@ class UserConfigurationShortMarketController extends Controller
     static public function update($id, $update)
     {
         $UserConfigurationShortMarket = UserConfigurationShortMarket::where('user_id', $id)->first();
+        if (!$UserConfigurationShortMarket) {
+            self::store($id, $update);
+           
+            return;
+        }
         $UserConfigurationShortMarket['update'] = json_encode($update);
         $UserConfigurationShortMarket->save();
     }
