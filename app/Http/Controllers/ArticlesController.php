@@ -19,6 +19,7 @@ use App\Http\Controllers\UserStatisticController;
 use App\Http\Controllers\WebsiteUsersController;
 use App\Http\Controllers\AllArticlesShortMarketController;
 use App\Http\Controllers\UserArticlesFbController;
+use App\CacheModel;
 
 use Log;
 
@@ -173,6 +174,7 @@ class ArticlesController extends Controller
         ];
         Log::info('ADDED ARTICLE: | '. $article->id .' | ');
         WebsiteConsfigurationController::refreshTagsPriorityList(1);
+        $this->createAllArticlesCache();
 
         return redirect()->route('articles.index')->with('data', $data);
     }
@@ -240,6 +242,7 @@ class ArticlesController extends Controller
         ];
         Log::info('UPDATED ARTICLE: | '. $id .' | ');
         WebsiteConsfigurationController::refreshTagsPriorityList(1);
+        $this->createAllArticlesCache();
 
         return redirect()->route('articles.index')->with('data', $data);
     }
@@ -263,6 +266,7 @@ class ArticlesController extends Controller
 
         Log::info('DELETED ARTICLE: | '. $id .' | ');
         WebsiteConsfigurationController::refreshTagsPriorityList(1);
+        $this->createAllArticlesCache();
 
         return redirect()->route('articles.index')->with('data', $data);
 
@@ -273,46 +277,9 @@ class ArticlesController extends Controller
     */
      public function all(Request $request)
     {
-        $uid = $request->query('uid');
-        if ($uid) {
-            $data = [];
-            $data['uid'] = $uid;
-            $data['stats'] = [];
-
-            array_push(
-                $data['stats'],
-                [
-                    'statType' => 'number_of_visits_by_day',
-                    'statData' => strtolower(substr((string)date("D")), 0, 3)
-                ],
-                [
-                    'statType' => 'time_of_visits',
-                    'statData' => date("H:i:s")
-                ],
-                [
-                    'statType' => 'number_of_visits',
-                    'statData' => 1
-                ]
-            );
-            UserStatisticController::updateUserData((object)$data);
-        }
-
-        $articles = Articles::all();;
-
-        $articles = self::filterForResponse($articles);
-        $topArticles = $this->getTopArticlesArray();
-        $latestArticles = $this->getLatestArticlesArray($topArticles);
-        $indexArticles = $this->getIndexPageArticlesArray($topArticles, $latestArticles);
-        $response = [
-            'articles' => $articles,
-            'topArticles' => $topArticles,
-            'latestArticles' => $latestArticles,
-            'indexPageArticles' => $indexArticles
-        ];
-        
-        Log::info('GET ALL ARTICLES | '.count($articles).' | ');
-        
-        return Response::json($response, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
+        return CacheModel::where('key', 'allArticles')
+                         ->select(['value'])
+                         ->first()['value'];
     }
 
     /**
@@ -468,99 +435,16 @@ class ArticlesController extends Controller
 
     public static function article(Request $request, $id)
     {
-        $article = Articles::where('article_title_url_slug', $id)->first();
-
-        if (!$article) {
-            $article = Articles::find($id);
-        }
-
-        if (!$article) {
-            return '{"status":"article not found"}';
-        }
-
-
-        $article->seen_times = $article->seen_times + 1;
-        $article->save();
-
-        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
-
-        $article['comments'] = self::fiterComentsForResponse($coments);
-        $article['likes'] =  self::fiterLikesForResponse($likes);
-        $article['dislikes'] = self::fiterDislikesForResponse($dislikes);
-        $article->tags = explode('|', $article->tags);
-        $article['categoryUrlSlug'] = self::getArticleCategoryUrlSlugForArticle($article->category);
-        $article['subscriptionId'] = ArticlesShortMarketController::getSubscriptionId($article->id);
-
-
-        $payload =['seen_times' => $article->seen_times];
-
-        ArticlesShortMarketController::update(
-            $article->id,
-            (object)[
-                'change' => 'action',
-                'payload' => json_encode($payload)
-            ]
-        );
-
-        $uid = $request->query('uid');
-        $aof = $request->query('aof');
-        $f = $request->query('f');
-
-        if ($uid) {
-            $data = [];
-            $data['uid'] = $uid;
-            $data['stats'] = [];
-
-            $request['action'] = 'addTextToVisited';
-            $request['textId'] = $id;
-
-            WebsiteUsersController::action($request, $uid);
-
-            array_push(
-                $data['stats'],
-                [
-                    'statType' => 'visited_tags',
-                    'statData' => $article->tags
-                ]
-            );
-            if ($aof) {
-                array_push(
-                $data['stats'],
-                    [
-                        'statType' => 'visited_tags',
-                        'statData' => $article->tags
-                    ]
-                );
-            }
-
-            if ($f) {
-                array_push(
-                $data['stats'],
-                    [
-                        'statType' => 'texts_open_that_was_featured',
-                        'statData' => $article->id
-                    ]
-                );
-            }
-
-            UserStatisticController::updateUserData((object)$data);
-        }
-
-        $update = [
-            'type' => 'update',
-            'payload' => '{}'
-        ];
-
-        $topArticles = self::getTopArticlesArray();
-        $latestArticles = self::getLatestArticlesArray($topArticles);
-        $indexArticles = self::getIndexPageArticlesArray($topArticles, $latestArticles);
-        AllArticlesShortMarketController::update($topArticles, $latestArticles, $indexArticles,  $update);
+        // $url = 'http://api.fitneszona.dev.rs/api/increase-seen-times/'.$id;
+        // file_get_contents($url);
+        // $url = $url.'?uid='.$request->query('uid');
+        // file_get_contents($url);
 
         Log::info('GET ARTICLE  : | '.$id .' |');
 
-        return Response::json($article, 200, array('charset' => 'utf8'), JSON_UNESCAPED_UNICODE);
+        return CacheModel::where('key', $id)
+                         ->select(['value'])
+                         ->first()['value'];
     }
 
     public function getArticleShortMArket($id)
@@ -724,7 +608,7 @@ class ArticlesController extends Controller
         $nameSlug = preg_replace('/\(/', '', $nameSlug);
         $nameSlug = preg_replace('/\)/', '', $nameSlug);
         $nameSlug = preg_replace('/\"/', '', $nameSlug);
-        $nameSlug = preg_replace('/\"/', '', $nameSlug);        
+        $nameSlug = preg_replace('/\"/', '', $nameSlug);
         $nameSlug = preg_replace('/\-–-/', '-', $nameSlug);
         $nameSlug = preg_replace('/\&/', '', $nameSlug);
 
@@ -842,7 +726,7 @@ class ArticlesController extends Controller
                        ->get()
                        ->toArray()
         );
-      
+
         return array_slice(
             array_filter(
                 $allArticles,
@@ -893,5 +777,141 @@ class ArticlesController extends Controller
         }
 
         return $latestArticles;
+    }
+
+    public function createAllArticlesCache()
+    {
+        $articles = Articles::all();;
+
+        $articles = self::filterForResponse($articles);
+        $topArticles = $this->getTopArticlesArray();
+        $latestArticles = $this->getLatestArticlesArray($topArticles);
+        $indexArticles = $this->getIndexPageArticlesArray($topArticles, $latestArticles);
+        $allArticles = [
+            'articles' => $articles,
+            'topArticles' => $topArticles,
+            'latestArticles' => $latestArticles,
+            'indexPageArticles' => $indexArticles
+        ];
+        if (empty(CacheModel::where('key', 'allArticles')->first())) {
+            $cache = new CacheModel;
+            $cache['key'] = 'allArticles';
+            $cache['value'] = json_encode($allArticles);
+            $cache->save();
+        } else {
+            CacheModel::where('key', 'allArticles')->update(['value' => json_encode($allArticles)]);
+        }
+
+        foreach ($articles as $article) {
+            $this->createSingleArticleCache($article->id);
+        }
+
+        Log::info('ALL ARTICLES CACHE CREATED');
+    }
+
+    public function populateUserStatsForAllArticles($id)
+    {
+        $data = [];
+        $data['uid'] = $id;
+        $data['stats'] = [];
+
+        array_push(
+            $data['stats'],
+            [
+                'statType' => 'number_of_visits_by_day',
+                'statData' => strtolower(substr((string)date("D")), 0, 3)
+            ],
+            [
+                'statType' => 'time_of_visits',
+                'statData' => date("H:i:s")
+            ],
+            [
+                'statType' => 'number_of_visits',
+                'statData' => 1
+            ]
+        );
+        UserStatisticController::updateUserData((object)$data);
+    }
+
+    public function populateUserStatsForSingleArticles(Request $request, $id)
+    {
+        $uid = $request->query('uid');
+        $article = Articles::find($id);
+
+        if ($uid) {
+            $data = [];
+            $data['uid'] = $uid;
+            $data['stats'] = [];
+
+            $request['action'] = 'addTextToVisited';
+            $request['textId'] = $id;
+
+            WebsiteUsersController::action($request, $uid);
+
+            array_push(
+                $data['stats'],
+                [
+                    'statType' => 'visited_tags',
+                    'statData' => $article->tags
+                ]
+            );
+
+            UserStatisticController::updateUserData((object)$data);
+        }
+    }
+
+    public function createSingleArticleCache($id)
+    {
+        $article = Articles::find($id);
+
+        if (!$article) {
+            return;
+        }
+
+        $coments = Comment::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        $likes = Like::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+        $dislikes = DisLike::where('text_id', $article->id)->orderBy('created_at', 'desc')->get();
+
+        $article['comments'] = self::fiterComentsForResponse($coments);
+        $article['likes'] =  self::fiterLikesForResponse($likes);
+        $article['dislikes'] = self::fiterDislikesForResponse($dislikes);
+        $article->tags = explode('|', $article->tags);
+        $article['categoryUrlSlug'] = self::getArticleCategoryUrlSlugForArticle($article->category);
+        $article['subscriptionId'] = ArticlesShortMarketController::getSubscriptionId($article->id);
+
+        if (empty(CacheModel::where('key', $article->article_title_url_slug)->first())) {
+            $cache = new CacheModel;
+            $cache['key'] = $article->article_title_url_slug;
+            $cache['value'] = json_encode($article);
+            $cache->save();
+        } else {
+            CacheModel::where('key', $article->article_title_url_slug)->update(['value' => json_encode($article)]);
+        }
+    }
+
+    public function increaseSeenTimesForArticle($id)
+    {
+
+        $article = Articles::find($id);
+
+        if (!$article) {
+            return '{"status":"article not found"}';
+        }
+
+
+        $article->seen_times = $article->seen_times + 1;
+        $article->save();
+
+        $payload =['seen_times' => $article->seen_times + 1];
+
+        ArticlesShortMarketController::update(
+            $article->id,
+            (object)[
+                'change' => 'action',
+                'payload' => json_encode($payload)
+            ]
+        );
+
+        return '{"status":"success"}';
     }
 }

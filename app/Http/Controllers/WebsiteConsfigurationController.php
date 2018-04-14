@@ -146,7 +146,7 @@ class WebsiteConsfigurationController extends Controller
 
 
         $configuration->save();
-        
+
         $this-> createConfigurationCache($id);
 
         $activeCategories = explode('|', $activeCategories);
@@ -191,7 +191,9 @@ class WebsiteConsfigurationController extends Controller
      */
     public function getConfiguration($id)
     {
-        return CacheModel::where('key', 'websiteConfiguration')->first();
+        return CacheModel::where('key', 'websiteConfiguration')
+                         ->select(['value'])
+                         ->first()['value'];
     }
 
     public function getActiveCategories($id)

@@ -77,3 +77,8 @@ Route::group(['middleware' => ['api', 'auth']], function () {
     Route::resource('statistics', 'UserStatisticController');
 });
 
+Route::get('api/all-stats/{id}', 'ArticlesController@populateUserStatsForAllArticles')->middleware('api');
+Route::get('api/increase-seen-times/{id}', 'ArticlesController@increaseSeenTimesForArticle')->middleware('api');
+Route::get('api/single-article-stats/{id}', 'ArticlesController@populateUserStatsForSingleArticles')->middleware('api');
+
+Route::get('api/create-cache/{id}', 'WebsiteConsfigurationController@createConfigurationCache')->middleware('api');

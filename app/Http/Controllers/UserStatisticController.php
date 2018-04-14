@@ -86,9 +86,9 @@ class UserStatisticController extends Controller
     }
 
     static public function get($userId, $prop)
-    {   
+    {
         $result = UserStatistic::where('user_id', $userId)->select($prop)->first();
-        
+
         return $result ? json_decode($result->toArray()[$prop]) : [];
     }
 
@@ -99,7 +99,7 @@ class UserStatisticController extends Controller
 
     static public function updateUserData($data)
     {
-        Log::info('UPDATING STATISTIC FOR USER | '. $data->uid . ' |'); 
+        Log::info('UPDATING STATISTIC FOR USER | '. $data->uid . ' |');
 
         $userStats = UserStatistic::where('user_id', $data->uid)->get();
         if ($userStats->isEmpty()) {
@@ -143,22 +143,22 @@ class UserStatisticController extends Controller
                         if ($stat['statType'] === 'visited_tags') {
                             self::set($data->uid, $stat['statType'], (array)$stat['statData']);
                         } else {
-                            self::set($data->uid, $stat['statType'], (array)[$stat['statData']]);  
-                        }                     
+                            self::set($data->uid, $stat['statType'], (array)[$stat['statData']]);
+                        }
                     } else {
                         if ($stat['statType'] === 'visited_tags') {
                             break;
                         } else {
-                            $result = self::get($data->uid, $stat['statType']);                            
+                            $result = self::get($data->uid, $stat['statType']);
                            array_push($result, $stat['statData']);
                         }
-                        $result = array_unique($result);                            
+                        $result = array_unique($result);
                         self::set($data->uid, $stat['statType'], (array)$result);
                     }
                 break;
             }
         }
-        
+
         $user =  method_exists($userStats, 'save') ?  $userStats->save() : null;
 
         $update;
@@ -167,6 +167,6 @@ class UserStatisticController extends Controller
 
         Log::info('STATISTIC FOR USER | '. $data->uid . ' | UPDATED');
 
-        // UserShortMarketController::update($data->uid, json_encode((object)$update));
+        UserShortMarketController::update($data->uid, json_encode((object)$update));
     }
 }
